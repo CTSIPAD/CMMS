@@ -1,0 +1,107 @@
+/*
+ Localizable.strings
+ CTSTest
+ 
+ Created by DNA on 12/17/13.
+ Copyright (c) 2013 LBI. All rights reserved.
+ */
+
+"Cancel"="إلغاء";
+"Continue"="استمر";
+"OK"="حسنا";
+"Warning"="تحذير";
+"Info"="معلومات";
+"Close"="أغلق";
+"Clear"="أزل";
+"Save"="حفظ";
+"Retry"="أعد المحاولة";
+"YES"="YES";
+"NO"="NO";
+
+"Login.Licence"="مفتاح الترخيص";
+"Login"="دخول";
+"Menu.Home"="الصفحة الرئيسية";
+"Menu.Next"="التالي";
+"Menu.Previous"="السابق";
+"Menu.Lock"="إغلاق";
+"Menu.Unlock"="فتح";
+"Highlight"="تسليط الضوء";
+"Sign"="توقيع";
+"Note"="ملاحظة";
+"Menu.Search"="بحث";
+"Menu.Metadata"="البيانات الوصفية";
+"Menu.Transfer"="نقل";
+"Menu.Attachments"="مرفقات";
+"Menu.Comments"="تعليقات";
+"Menu.Annotations"="الشروح";
+"Menu.More"="المزيد ...";
+
+"Erase"="محو";
+"Signature.YourSignature"="التوقيع الخاص";
+"Signature.PinCode"="الرمز السري";
+"Signature.PinCodeConfirmation"="تأكيد الرمز";
+"Signature.OldPinCode"="الرمز السري القديم";
+"Signature.ConfirmPin"="تأكيد الرقم السري";
+"Signature.Width"="width";
+"Signature.Height"="Height";
+"Signature.Color"="Color";
+"Signature.Red"="Red";
+"Signature.Green"="Green";
+"Signature.Blue"="Blue";
+"Transfer.TransferCorrespondence"="نقل المراسلات";
+"Transfer.TransferTo"="نقل إلى";
+"Transfer.Direction"="اتجاه";
+"Transfer.DueDate"="تاريخ";
+"Transfer.Note"="ملاحظة";
+"Transfer.Cancel"="إلغاء";
+"Transfer.Message"="يرجى ملء جميع الحقول";
+"Note.AddNote"="إضافة";
+"Note.Private"="خاص";
+"Note.Message"="يرجى ملء حقل الملاحظات.";
+"tasktable.locked"="مهمة مقفل";
+"tasktable.locked.dialog"="قد اقفل المهمة.";
+"Search.SearchKeywords"="كلمات البحث";
+"Search.SearchInbox"="Search Inbox";
+"Search.SearchArchive"="Search Archive";
+"Search.SimpleSearch"="بحث بسيط";
+"Search.AdvanceSearch"="بحث متقدم";
+"Search.Sender"="Sender";
+"Search.Subject"="Subject";
+"Search.Reference"="Reference";
+"Search.Date"="Date";
+"Search"="بحث";
+"root.disconnectdialog"="هل تريد حقا أن افصل؟";
+"root.disconnect"="تسجيل الخروج";
+"root.disconnect.NO"="البقاء على اتصال";
+"root.disconnect.YES"="تسجيل الخروج";
+
+"Progress.Connecting"="الاتصال ...";
+
+"Alert"="إنذار";
+"Alert.Sign"="انقر على وثيقة PDF للتوقيع";
+"Alert.fileNotFound"="لم يتم العثور على ملف";
+"Alert.IncorrectPin"="الرمز الشخصي غير صحيح";
+"Alert.LicenceAlert"="مفتاح الترخيص غير متوفرة، يرجى تقديم مفتاح أو المواصلة على التجربة";
+"Alert.Trial" ="انتهت التجربة يرجى إدخال مفتاح الترخيص في قائمة الإعدادات";
+"Alert.Connection"="اتصال غير موجود";
+"Alert.EmptyUser"="اسم المستخدم أو كلمة المرور فارغة";
+"Alert.NoTask"="لم يتم العثور على مهام";
+"Alert.Sync"="مزامنة ...";
+"Alert.Searching"="البحث ...";
+"Alert.Extension"="نوع الوثيقة غير معتمد.";
+"Alert.RequiredFields"="يرجى تعبئة جميع الحقول المطلوبة.";
+"Alert.SignatureSaved"="حفظ التوقيع بنجاح";
+"Alert.WrongPin"="الرقم السري غير صحيحة";
+"Alert.PinMatch"="لا تتطابق";
+"Alert.DeleteNote"="هل أنت متأكد أنك تريد حذف هذه الملاحظة؟";
+"Alert.NoResult"="لا نتائج لبحثك.";
+"Alert.TypeKeyword"="اكتب الكلمة.";
+"Alert.NoSignature"="No Signature Available,please configure a signature";
+"Alert.SaveDoc"="Are you sure you want to save?";
+"Alert.Loading"="Loading ...";
+"Alert.Colors"="Color values must be between 0 and 255.";
+
+
+
+
+

@@ -1,0 +1,109 @@
+/* 
+  Localizable.strings
+  CTSTest
+
+  Created by DNA on 12/17/13.
+  Copyright (c) 2013 LBI. All rights reserved.
+*/
+
+"Cancel"="Cancel";
+"Continue"="Continue";
+"OK"="OK";
+"Warning"="Warning";
+"Info"="Info";
+"Close"="Close";
+"Clear"="Clear";
+"Save"="Save";
+"Retry"="Retry";
+"YES"="YES";
+"NO"="NO";
+
+"Login.Licence"="License Key";
+"Login"="Login";
+"Menu.Home"="Home";
+"Menu.Next"="Next";
+"Menu.Previous"="Previous";
+"Menu.Lock"="Lock";
+"Menu.Unlock"="Unlock";
+"Menu.Highlight"="Highlight";
+"Menu.Sign"="Sign";
+"Menu.Note"="Note";
+"Menu.Search"="Search";
+"Menu.Metadata"="Metadata";
+"Menu.Transfer"="Transfer";
+"Menu.Attachments"="Attachments";
+"Menu.Comments"="Comments";
+"Menu.Annotations"="Annotations";
+"Menu.More"="More...";
+"Highlight"="Highlight";
+"Sign"="Sign";
+"Note"="Note";
+"Erase"="Erase";
+"Signature.YourSignature"="Your Signature";
+"Signature.PinCode"="Pin Code";
+"Signature.PinCodeConfirmation"="Pin Code Confirmation";
+"Signature.OldPinCode"="Old Pin Code";
+"Signature.ConfirmPin"="Confirm Pin";
+"Signature.Width"="width";
+"Signature.Height"="Height";
+"Signature.Color"="Color :";
+"Signature.Red"="Red";
+"Signature.Green"="Green";
+"Signature.Blue"="Blue";
+"Transfer.TransferCorrespondence"="Transfer Correspondence";
+"Transfer.TransferTo"="Transfer To";
+"Transfer.Direction"="Direction";
+"Transfer.DueDate"="Due Date";
+"Transfer.Note"="Note";
+"Transfer.Cancel"="Cancel";
+"Transfer.Message"="Please fill all fields.";
+"Note.AddNote"="Add";
+"Note"="Note";
+"Note.Private"="Private";
+"Note.Message"="Please fill note field.";
+"tasktable.locked"="Task is locked";
+"tasktable.locked.dialog"="has locked the task.";
+"Search.SearchKeywords"="Search Keywords";
+"Search.SearchInbox"="Search Inbox";
+"Search.SearchArchive"="Search Archive";
+"Search.SimpleSearch"="Simple Search";
+"Search.AdvanceSearch"="Advance Search";
+"Search.Sender"="Sender";
+"Search.Subject"="Subject";
+"Search.Reference"="Reference";
+"Search.Date"="Date";
+"Search"="Search";
+"root.disconnectdialog"="Do you really want to disconnect ?";
+"root.disconnect"="Sign out";
+"root.disconnect.NO"="Stay Connected";
+"root.disconnect.YES"="Sign Out";
+
+"Progress.Connecting"="Connecting ...";
+
+"Alert"="Alert";
+"Alert.Sign"="Tap on PDF document to sign";
+"Alert.fileNotFound"="file not found";
+"Alert.IncorrectPin"="Incorrect Pin Code";
+"Alert.LicenceAlert"="License Key unavailable,please provide a key or continue as trial";
+"Alert.Trial" ="Trial expired please insert license key in settings menu";
+"Alert.Connection"="Connection not found, network is unavailable";
+"Alert.EmptyUser"="Username or password is Empty";
+"Alert.NoTask"="No Tasks Found";
+"Alert.Sync"="Synchronizing ...";
+"Alert.Searching"="Searching ...";
+"Alert.Loading"="Loading ...";
+"Alert.Extension"="Document type not supported.";
+"Alert.RequiredFields"="PLease fill all required fields.";
+"Alert.SignatureSaved"="Signature Saved Successfully";
+"Alert.WrongPin"="Wrong Pincode";
+"Alert.PinMatch"="Pin code Confirmation doesn't match";
+"Alert.DeleteNote"="Are you sure you want to delete this note?";
+"Alert.NoResult"="No Result Found.";
+"Alert.TypeKeyword"="Type a keyword.";
+"Alert.NoSignature"="No Signature Available,please configure a signature";
+"Alert.SaveDoc"="Are you sure you want to save?";
+"Alert.Colors"="Color values must be between 0 and 255.";
+
+
+
+
