@@ -105,7 +105,7 @@
         }
 
     }
-    if([mainDelegate.userLanguage.lowercaseString isEqualToString:@"arabic"]){
+    if([mainDelegate.userLanguage.lowercaseString isEqualToString:@"ar"]){
         labelTitle.textAlignment=NSTextAlignmentRight;
         imageView.frame=CGRectMake(cell.frame.size.width-45, 5, 37, 37);
     }

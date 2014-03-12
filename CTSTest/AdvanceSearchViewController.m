@@ -135,7 +135,7 @@
        
         label.backgroundColor = [UIColor clearColor];
         label.font =[UIFont fontWithName:@"Helvetica-Bold" size:24.0f];
-        if([maindelegate.userLanguage.lowercaseString isEqualToString:@"arabic"]){
+        if([maindelegate.userLanguage.lowercaseString isEqualToString:@"ar"]){
             label.textAlignment=NSTextAlignmentRight;
         }
         [view addSubview:label];

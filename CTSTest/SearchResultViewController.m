@@ -90,7 +90,7 @@
         NSString *value=[subSubDictionary objectForKey:[subkeys objectAtIndex:0]];
         if([[keys objectAtIndex:0] isEqualToString:@"Sender"])
         {
-             if([appDelegate.userLanguage.lowercaseString isEqualToString:@"arabic"])
+             if([appDelegate.userLanguage.lowercaseString isEqualToString:@"ar"])
                  cell.label2.text=[NSString stringWithFormat:@"%@: %@",[[subSubDictionary allKeys] objectAtIndex:0],value];
                  else
             cell.label2.text=[NSString stringWithFormat:@"%@: %@",[[subSubDictionary allKeys] objectAtIndex:0],value];
@@ -99,14 +99,14 @@
             cell.label1.text=value;
         }else if([[keys objectAtIndex:0] isEqualToString:@"Reference"])
         {
-             if([appDelegate.userLanguage.lowercaseString isEqualToString:@"arabic"])
+             if([appDelegate.userLanguage.lowercaseString isEqualToString:@"ar"])
                  cell.label3.text=[NSString stringWithFormat:@"%@: %@",[[subSubDictionary allKeys] objectAtIndex:0],value];
                  else
             cell.label3.text=[NSString stringWithFormat:@"%@: %@",[[subSubDictionary allKeys] objectAtIndex:0],value];
         }
         else if([[keys objectAtIndex:0] isEqualToString:@"Date"])
         {
-             if([appDelegate.userLanguage.lowercaseString isEqualToString:@"arabic"])
+             if([appDelegate.userLanguage.lowercaseString isEqualToString:@"ar"])
                    cell.label4.text=[NSString stringWithFormat:@"%@: %@",[[subSubDictionary allKeys] objectAtIndex:0],value];
                  else
             cell.label4.text=[NSString stringWithFormat:@"%@: %@",[[subSubDictionary allKeys] objectAtIndex:0],value];
@@ -116,7 +116,7 @@
     [cell setImageThumbnailBase64:attachment.thumbnailBase64];
     
     [cell updateCell];
-    if([appDelegate.userLanguage.lowercaseString isEqualToString:@"arabic"]){
+    if([appDelegate.userLanguage.lowercaseString isEqualToString:@"ar"]){
         cell.label1.textAlignment=NSTextAlignmentRight;
         cell.label2.textAlignment=NSTextAlignmentRight;
         cell.label3.textAlignment=NSTextAlignmentRight;

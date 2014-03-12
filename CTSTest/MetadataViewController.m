@@ -121,7 +121,7 @@
      NSDictionary *subSubDictionary=[subDictionary objectForKey:[keys objectAtIndex:0]];
     lblTitle.text=[[subSubDictionary allKeys] objectAtIndex:0];
     
-     if([mainDelegate.userLanguage.lowercaseString isEqualToString:@"arabic"])
+     if([mainDelegate.userLanguage.lowercaseString isEqualToString:@"ar"])
          lblTitle.textAlignment=NSTextAlignmentRight;
     [view addSubview:lblTitle];
     return view;
@@ -147,7 +147,7 @@
     NSLog(@"%@",[subSubDictionary objectForKey:[subkeys objectAtIndex:0]]);
     cell.textLabel.text= [subSubDictionary objectForKey:[subkeys objectAtIndex:0]];
    
-    if([mainDelegate.userLanguage.lowercaseString isEqualToString:@"arabic"])
+    if([mainDelegate.userLanguage.lowercaseString isEqualToString:@"ar"])
         cell.textLabel.textAlignment=NSTextAlignmentRight;
     return cell;
 }

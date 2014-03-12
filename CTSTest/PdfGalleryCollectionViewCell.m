@@ -48,7 +48,7 @@
         lblSubject.textColor=[UIColor whiteColor];
         lblSubject.numberOfLines=0;
         
-        if([appDelegate.userLanguage.lowercaseString isEqualToString:@"arabic"]){
+        if([appDelegate.userLanguage.lowercaseString isEqualToString:@"ar"]){
              lblSender.textAlignment=NSTextAlignmentRight;
              lblSubject.textAlignment=NSTextAlignmentRight;
         }
