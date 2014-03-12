@@ -25,7 +25,7 @@ CGPoint midPoint(CGPoint p1 ,CGPoint p2){
         self.sigView=imageView;
         self.sigView.userInteractionEnabled=YES;
         
-		self.backgroundColor=[UIColor clearColor];
+		self.backgroundColor=[UIColor whiteColor];
 		self.userInteractionEnabled=YES;
         
         if(![signature isEqualToString:@""]){
