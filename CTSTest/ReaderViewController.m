@@ -1377,9 +1377,9 @@ typedef enum{
             noteView.view.superview.frame = CGRectMake(300, 300, 400, 250);
             UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
             if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown) {
-                noteView.view.superview.frame = CGRectMake(150, 300, 400, 350);
+                noteView.view.superview.frame = CGRectMake(150, 300, 400, 250);
             } else {
-                noteView.view.superview.frame = CGRectMake(300, 300, 400, 350);
+                noteView.view.superview.frame = CGRectMake(300, 300, 400, 250);
             }
 
             noteView.delegate=self;
