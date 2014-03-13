@@ -7,7 +7,7 @@
  */
 
 "Cancel"="إلغاء";
-"Continue"="استمر";
+"Continue"="إستمر";
 "OK"="حسنا";
 "Warning"="تحذير";
 "Info"="معلومات";
@@ -15,15 +15,15 @@
 "Clear"="أزل";
 "Save"="حفظ";
 "Retry"="أعد المحاولة";
-"YES"="YES";
-"NO"="NO";
+"YES"="نعم";
+"NO"="كلا";
 
 "Login.Licence"="مفتاح الترخيص";
 "Login"="دخول";
 "Menu.Home"="الصفحة الرئيسية";
 "Menu.Next"="التالي";
 "Menu.Previous"="السابق";
-"Menu.Lock"="إغلاق";
+"Menu.Lock"="إقفال";
 "Menu.Unlock"="فتح";
 "Highlight"="تسليط الضوء";
 "Sign"="توقيع";
@@ -42,12 +42,12 @@
 "Signature.PinCodeConfirmation"="تأكيد الرمز";
 "Signature.OldPinCode"="الرمز السري القديم";
 "Signature.ConfirmPin"="تأكيد الرقم السري";
-"Signature.Width"="width";
-"Signature.Height"="Height";
-"Signature.Color"="Color";
-"Signature.Red"="Red";
-"Signature.Green"="Green";
-"Signature.Blue"="Blue";
+"Signature.Width"="عرض";
+"Signature.Height"="طول";
+"Signature.Color"="اللون";
+"Signature.Red"="أحمر";
+"Signature.Green"="أخضر";
+"Signature.Blue"="أزرق";
 "Transfer.TransferCorrespondence"="نقل المراسلات";
 "Transfer.TransferTo"="نقل إلى";
 "Transfer.Direction"="اتجاه";
@@ -58,48 +58,48 @@
 "Note.AddNote"="إضافة";
 "Note.Private"="خاص";
 "Note.Message"="يرجى ملء حقل الملاحظات.";
-"tasktable.locked"="مهمة مقفل";
-"tasktable.locked.dialog"="قد اقفل المهمة.";
+"tasktable.locked"="مهمة مقفلة";
+"tasktable.locked.dialog"="قد أقفل المهمة.";
 "Search.SearchKeywords"="كلمات البحث";
-"Search.SearchInbox"="Search Inbox";
-"Search.SearchArchive"="Search Archive";
+"Search.SearchInbox"="البحث في البريد الوارد";
+"Search.SearchArchive"="البحث في الأرشيف";
 "Search.SimpleSearch"="بحث بسيط";
 "Search.AdvanceSearch"="بحث متقدم";
-"Search.Sender"="Sender";
-"Search.Subject"="Subject";
-"Search.Reference"="Reference";
-"Search.Date"="Date";
+"Search.Sender"="المرسل";
+"Search.Subject"="الموضوع";
+"Search.Reference"="المرجع";
+"Search.Date"="التاريخ";
 "Search"="بحث";
-"root.disconnectdialog"="هل تريد حقا أن افصل؟";
+"root.disconnectdialog"="هل تريد حقا قطع الإتصال؟";
 "root.disconnect"="تسجيل الخروج";
-"root.disconnect.NO"="البقاء على اتصال";
+"root.disconnect.NO"="البقاء على إتصال";
 "root.disconnect.YES"="تسجيل الخروج";
 
-"Progress.Connecting"="الاتصال ...";
+"Progress.Connecting"="الإتصال ...";
 
 "Alert"="إنذار";
-"Alert.Sign"="انقر على وثيقة PDF للتوقيع";
+"Alert.Sign"="إنقر على وثيقة PDF للتوقيع";
 "Alert.fileNotFound"="لم يتم العثور على ملف";
 "Alert.IncorrectPin"="الرمز الشخصي غير صحيح";
-"Alert.LicenceAlert"="مفتاح الترخيص غير متوفرة، يرجى تقديم مفتاح أو المواصلة على التجربة";
-"Alert.Trial" ="انتهت التجربة يرجى إدخال مفتاح الترخيص في قائمة الإعدادات";
-"Alert.Connection"="اتصال غير موجود";
-"Alert.EmptyUser"="اسم المستخدم أو كلمة المرور فارغة";
+"Alert.LicenceAlert"="مفتاح الترخيص غير متوفر، يرجى تقديم مفتاح أو المواصلة على التجربة";
+"Alert.Trial" ="إنتهت التجربة يرجى إدخال مفتاح الترخيص في قائمة الإعدادات";
+"Alert.Connection"="إتصال غير موجود";
+"Alert.EmptyUser"="إسم المستخدم أو كلمة المرور فارغة";
 "Alert.NoTask"="لم يتم العثور على مهام";
-"Alert.Sync"="مزامنة ...";
+"Alert.Sync"="مزامنة... ";
 "Alert.Searching"="البحث ...";
 "Alert.Extension"="نوع الوثيقة غير معتمد.";
-"Alert.RequiredFields"="يرجى تعبئة جميع الحقول المطلوبة.";
+"Alert.RequiredFields"="يرجى تعبئة جميع الحقول الإلزامية.";
 "Alert.SignatureSaved"="حفظ التوقيع بنجاح";
-"Alert.WrongPin"="الرقم السري غير صحيحة";
+"Alert.WrongPin"="الرقم السري غير صحيح";
 "Alert.PinMatch"="لا تتطابق";
 "Alert.DeleteNote"="هل أنت متأكد أنك تريد حذف هذه الملاحظة؟";
 "Alert.NoResult"="لا نتائج لبحثك.";
-"Alert.TypeKeyword"="اكتب الكلمة.";
-"Alert.NoSignature"="No Signature Available,please configure a signature";
-"Alert.SaveDoc"="Are you sure you want to save?";
-"Alert.Loading"="Loading ...";
-"Alert.Colors"="Color values must be between 0 and 255.";
+"Alert.TypeKeyword"="أكتب الكلمة.";
+"Alert.NoSignature"="لا يوجد توقيع متوفر، يرجى تكوين التوقيع";
+"Alert.SaveDoc"="هل أنت متأكد أنك تريد الحفظ؟";
+"Alert.Loading"="جاري التحميل...";
+"Alert.Colors"="يجب أن تكون قيمة اللون بين . و ‌٢٥٥";
 
 
 
