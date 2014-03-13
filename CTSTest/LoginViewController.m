@@ -325,7 +325,7 @@
         CCOptions padding = kCCOptionPKCS7Padding;
         NSData *encryptedData = [crypto encrypt:_secretData key:[_key dataUsingEncoding:NSUTF8StringEncoding] padding:&padding];
        
-        NSString* url = [NSString stringWithFormat:@"http://%@?action=login&usercode=%@&password=%@",serverUrl,username,[encryptedData base64EncodingWithLineLength:0]];
+        NSString* url = [NSString stringWithFormat:@"http://%@?action=Login&usercode=%@&password=%@",serverUrl,username,[encryptedData base64EncodingWithLineLength:0]];
         NSURL *xmlUrl = [NSURL URLWithString:url];
         
         NSMutableURLRequest* request=[[NSMutableURLRequest alloc]initWithURL:xmlUrl];

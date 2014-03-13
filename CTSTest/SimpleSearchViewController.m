@@ -228,7 +228,7 @@
          [body appendData:[queryString dataUsingEncoding:NSUTF8StringEncoding]];
          [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
          
-         // token parameter
+         // typeID parameter
          [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
          [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"typeId\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
          [body appendData:[[NSString stringWithFormat:@"%d", selectedType] dataUsingEncoding:NSUTF8StringEncoding]];
