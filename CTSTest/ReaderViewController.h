@@ -31,6 +31,7 @@
 #import "TransferViewController.h"
 #import "ManageSignatureViewController.h"
 
+#import "ActionsTableViewController.h"
 
 @class ReaderViewController;
 @class PDFDocument;
@@ -50,6 +51,13 @@
 	PDFView* m_pdfview;
     UIAlertView* alertNote;
     NSString *currentFilePath;
+    
+    UIButton *openButton;
+    UIButton *numberPages;
+    
+    UIView *folderPagebar;
+    NSMutableArray *folderarray;
+
 }
 
 @property(nonatomic,strong)UILabel *counter;
@@ -58,16 +66,30 @@
 @property(nonatomic,assign) NSInteger correspondenceId;
 @property(nonatomic,assign) NSInteger attachmentId;
 
+@property (nonatomic,strong)UIButton *openButton;
+@property (nonatomic,strong) UIView *folderPagebar;
+@property (nonatomic,strong)UIButton *numberPages;
 
 
-//@property(nonatomic,strong)SearchViewController *searchTable;
-//@property(nonatomic,strong)NotesViewController *noteTable;
 @property(nonatomic,strong)UIView *noteContainer;
 @property (nonatomic, unsafe_unretained, readwrite) id <ReaderViewControllerDelegate> delegate;
-//@property (nonatomic, retain) Scanner *scanner;
+
 @property (nonatomic, copy) NSArray *selections;
 @property (nonatomic, copy) NSString *keyword;
 
 - (id)initWithReaderDocument:(ReaderDocument *)object MenuId:(NSInteger)menuId CorrespondenceId:(NSInteger)correspondenceId AttachmentId:(NSInteger)attachmentId;
 
+
++(void)closeMetadata;
+
 @end
+
+//#pragma mark -
+//
+////
+////	ReaderPagebarShadow class interface
+////
+//
+//@interface ReaderPagebarShadow : UIView
+//
+//@end

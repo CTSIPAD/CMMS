@@ -57,6 +57,20 @@
 		imageView.contentMode = UIViewContentModeScaleAspectFit;
 
 		[self addSubview:imageView];
+        
+        labelview = [[UILabel alloc] initWithFrame:CGRectMake(20, 85, self.frame.size.width-20, self.frame.size.height)];
+//        CGFloat red = 0.0f / 255.0f;
+//        CGFloat green = 155.0f / 255.0f;
+//        CGFloat blue = 213.0f / 255.0f;
+        //labelview.textColor = [UIColor colorWithRed:red green:green blue:blue alpha:1.0];
+        labelview.textColor= [UIColor whiteColor];
+        labelview.lineBreakMode = NSLineBreakByWordWrapping;
+        labelview.numberOfLines = 2;
+        
+         labelview.font = [UIFont fontWithName:@"Helvetica" size:17];
+        
+        [imageView addSubview:labelview];
+        [imageView bringSubviewToFront:labelview];
 	}
 
 	return self;
@@ -65,6 +79,10 @@
 - (void)showImage:(UIImage *)image
 {
 	imageView.image = image; // Show image
+}
+
+-(void)showLabel:(NSString *)text{
+    labelview.text=text;
 }
 
 - (void)showTouched:(BOOL)touched

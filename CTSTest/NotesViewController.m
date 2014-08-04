@@ -55,7 +55,23 @@
     self.currentUser=mainDelegate.user;
    
     correspondence=((CMenu*)self.currentUser.menu[self.menuId]).correspondenceList[self.correspondenceId];
-    attachment=correspondence.attachmentsList[self.attachmentId];
+    
+    NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
+    
+    
+    if (correspondence.attachmentsList.count>0)
+    {
+        for(CAttachment* doc in correspondence.attachmentsList)
+        {
+            if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+                [thumbnailrarray addObject:doc];
+            }
+            
+            
+        }
+    }
+
+    attachment=thumbnailrarray[self.attachmentId];
     notesArray=attachment.annotations;
    
 }

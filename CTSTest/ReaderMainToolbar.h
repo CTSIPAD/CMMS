@@ -44,12 +44,17 @@
 - (void)tappedInToolbar:(ReaderMainToolbar *)toolbar metadataButton:(UIButton *)button;
 - (void)tappedInToolbar:(ReaderMainToolbar *)toolbar transferButton:(UIButton *)button;
 - (void)tappedInToolbar:(ReaderMainToolbar *)toolbar annotationButton:(UIButton *)button;
+- (void)tappedInToolbar:(ReaderMainToolbar *)toolbar SignActionButton:(UIButton *)button;
+
+//jen action
+-(void)tappedInToolbar:(ReaderMainToolbar *)toolbar actionButton:(UIButton *)button;
+//
 - (void)tappedInToolbar:(ReaderMainToolbar *)toolbar lockButton:(UIButton *)button message:(NSString*)msg;
-
-- (void)tappedInToolbar:(ReaderMainToolbar *)toolbar nextButton:(UIButton *)button documentReader:(ReaderDocument*)reader correspondenceId:(NSInteger)correspondenceId;
-- (void)tappedInToolbar:(ReaderMainToolbar *)toolbar previousButton:(UIButton *)button documentReader:(ReaderDocument*)reader correspondenceId:(NSInteger)correspondenceId;
-
-
+//jen PreviousNext
+//- (void)tappedInToolbar:(ReaderMainToolbar *)toolbar nextButton:(UIButton *)button documentReader:(ReaderDocument*)reader correspondenceId:(NSInteger)correspondenceId;
+//-(void)tappedInToolbar:(ReaderMainToolbar *)toolbar previousButton:(UIButton *)button documentReader:(ReaderDocument*)reader correspondenceId:(NSInteger)correspondenceId;
+- (void)tappedInToolbar:(ReaderMainToolbar *)toolbar nextButton:(UIButton *)button documentReader:(ReaderDocument*)reader correspondenceId:(NSInteger)correspondenceId attachementId:(NSInteger)attachementId;
+- (void)tappedInToolbar:(ReaderMainToolbar *)toolbar previousButton:(UIButton *)button documentReader:(ReaderDocument*)reader correspondenceId:(NSInteger)correspondenceId attachementId:(NSInteger)attachementId;
 @end
 
 @interface ReaderMainToolbar : UIXToolbarView{
@@ -63,7 +68,16 @@
     UIButton *attachmentButton;
     UIButton *metadataButton;
     UIButton *annotationButton;
+    UIButton *SignActionButton;
+
+    //jen add(Accept,Reject,Send)
+//    UIButton *acceptButton;
+//    UIButton *sendButton;
+//    UIButton *rejectButton;
+    UIButton *actionButton;
     UILabel *lblTitle;
+    
+    UIButton *closeButton;
 }
 
 @property (nonatomic, unsafe_unretained, readwrite) id <ReaderMainToolbarDelegate> delegate;
@@ -77,13 +91,14 @@
 @property (nonatomic,strong)UIButton *previousButton;
 @property (nonatomic,strong)UIButton *lockButton;
 @property (nonatomic,strong)UIButton *actionsButton;
-
+@property (nonatomic,strong)UIButton *actionButton;
 @property (nonatomic,strong)UIButton *transferButton;
 @property (nonatomic,strong)UIButton *commentsButton;
 @property (nonatomic,strong)UIButton *attachmentButton;
 @property (nonatomic,strong)UIButton *metadataButton;
 @property (nonatomic,strong)UIButton *annotationButton;
 
+@property (nonatomic,strong)UIButton *closeButton;
 
 
 - (id)initWithFrame:(CGRect)frame document:(ReaderDocument *)object CorrespondenceId:(NSInteger)correspondenceId MenuId:(NSInteger)menuId AttachmentId:(NSInteger)attachmentId;
@@ -93,4 +108,6 @@
 - (void)hideToolbar;
 - (void)showToolbar;
 -(void)adjustButtons:(UIInterfaceOrientation)orientation;
+
+-(void)desableButtons;
 @end

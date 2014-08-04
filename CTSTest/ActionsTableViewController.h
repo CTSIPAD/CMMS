@@ -7,12 +7,34 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ActionTaskController.h"
+#import "ReaderDocument.h"
+#import "CAction.h"
 @class CUser;
+@class ReaderMainToolbar;
+@class ActionsTableViewController;
+@class TransferViewController;
 
-@interface ActionsTableViewController : UITableViewController
+@protocol TransferViewDelegate <NSObject>
 
+@required
+-(void)movehome:(ActionsTableViewController*)viewcontroller;
+-(void)PopUpCommentDialog:(UITableViewController*)viewcontroller Action:(CAction*)action;
+-(void)send:(NSString*)action note:(NSString*)note;
+
+@end
+
+
+@interface ActionsTableViewController : UITableViewController<UIAlertViewDelegate>
+{
+    ReaderDocument *document;
+
+}
 @property(nonatomic,strong)CUser *user;
 @property(nonatomic,strong)NSString* correspondenceId;
 @property(nonatomic,strong)NSString* docId;
 @property(nonatomic,strong)NSMutableArray* actions;
+@property(nonatomic,strong)	ReaderDocument *document;
+@property(nonatomic,unsafe_unretained,readwrite) id <TransferViewDelegate> delegate;
+
 @end

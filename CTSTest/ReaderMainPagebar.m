@@ -22,7 +22,7 @@
 //	WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 //	CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
+#import "GDataXMLNode.h"
 #import "ReaderMainPagebar.h"
 #import "ReaderThumbCache.h"
 #import "ReaderDocument.h"
@@ -55,21 +55,22 @@
 	NSTimer *trackTimer;
     AppDelegate* mainDelegate;
     
+    UIScrollView* scrollViewmainPagebar;
    }
 
 #pragma mark Constants
 
-#define THUMB_SMALL_GAP 2
+#define THUMB_SMALL_GAP 0
 //#define THUMB_SMALL_WIDTH 22
 //#define THUMB_SMALL_HEIGHT 28
 //
 //#define THUMB_LARGE_WIDTH 32
 //#define THUMB_LARGE_HEIGHT 42
-#define THUMB_SMALL_WIDTH 74
-#define THUMB_SMALL_HEIGHT 86
+#define THUMB_SMALL_WIDTH 114
+#define THUMB_SMALL_HEIGHT 134
 
-#define THUMB_LARGE_WIDTH 84
-#define THUMB_LARGE_HEIGHT 104
+#define THUMB_LARGE_WIDTH 114
+#define THUMB_LARGE_HEIGHT 134
 
 #define PAGE_NUMBER_WIDTH 96.0f
 #define PAGE_NUMBER_HEIGHT 30.0f
@@ -102,8 +103,10 @@
     }else{
         correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
     }
-  
-    NSInteger pages=correspondence.attachmentsList.count;
+
+//    NSInteger pages=correspondence.attachmentsList.count;
+    
+     NSInteger pages=thumbnailrarray.count;
     
 	if (pages > 1) // Only update frame if more than one page
 	{
@@ -127,19 +130,23 @@
 
 	if (page != pageThumbView.tag) // Only if page number changed
 	{
-		pageThumbView.tag = page; [pageThumbView reuse]; // Reuse the thumb view
-
-		CGSize size = CGSizeMake(THUMB_LARGE_WIDTH, THUMB_LARGE_HEIGHT); // Maximum thumb size
-
-		//NSURL *fileURL = document.fileURL; NSString *guid = document.guid; NSString *phrase = document.password;
-
-		//ReaderThumbRequest *request = [ReaderThumbRequest newForView:pageThumbView fileURL:fileURL password:phrase guid:guid page:page size:size];
-
-		//UIImage *image = [[ReaderThumbCache sharedInstance] thumbRequest:request priority:YES]; // Request the thumb
-        CAttachment *file=correspondence.attachmentsList[self.attachmentId];
-        NSData * data = [NSData dataWithBase64EncodedString:file.thumbnailBase64];
         
-        UIImage *image = [UIImage imageWithData:data];
+		pageThumbView.tag = page; [pageThumbView reuse]; // Reuse the thumb view
+        if(thumbnailrarray.count<self.attachmentId)
+            self.attachmentId=0;
+        CAttachment *file;
+        if(self.attachmentId >= thumbnailrarray.count){
+            file=thumbnailrarray[0];
+        }
+        else{
+            file=thumbnailrarray[self.attachmentId];
+        }
+//johnny here
+          [pageThumbView showLabel:file.location];
+        
+        UIImage *image =[UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:file.ThubnailUrl]]];
+        //UIImage *image =[UIImage imageNamed:@"file.png"];
+        
 		UIImage *thumb = ([image isKindOfClass:[UIImage class]] ? image : nil);
         [pageThumbView showImage:thumb];
 	}
@@ -147,25 +154,40 @@
 
 - (void)updatePageNumberText:(NSInteger)page
 {
-	if (page != pageNumberLabel.tag) // Only if page number changed
-	{
+	//if (page != pageNumberLabel.tag) // Only if page number changed
+	//{
         CCorrespondence *correspondence;
         if(self.menuId!=100){
             correspondence= ((CMenu*)self.user.menu[self.menuId]).correspondenceList[self.correspondenceId];
         }else{
             correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
         }
-        
-        NSInteger pages=correspondence.attachmentsList.count;
+        thumbnailrarray = [[NSMutableArray alloc] init];
+
+        if (correspondence.attachmentsList.count>0)
+        {
+            for(CAttachment* doc in correspondence.attachmentsList)
+            {
+                if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+                    [thumbnailrarray addObject:doc];
+                }
+                
+                
+            }
+        }
+
+        NSInteger pages=thumbnailrarray.count;
         
 		NSString *format = NSLocalizedString(@"%d of %d", @"format"); // Format
-
+        if(page>thumbnailrarray.count)
+            page=1;
 		NSString *number = [NSString stringWithFormat:format, page, pages]; // Text
 
 		pageNumberLabel.text = number; // Update the page number label text
 
 		pageNumberLabel.tag = page; // Update the last page number tag
-	}
+    
+	
 }
 
 - (id)initWithFrame:(CGRect)frame Document:(ReaderDocument *)object CorrespondenceId:(NSInteger)correspondenceId MenuId:(NSInteger)menuId AttachmentId:(NSInteger)attachmentId
@@ -177,11 +199,15 @@
         self.correspondenceId=correspondenceId;
         self.menuId=menuId;
         self.attachmentId=attachmentId;
+        
 		self.autoresizesSubviews = YES;
 		self.userInteractionEnabled = YES;
 		self.contentMode = UIViewContentModeRedraw;
 		self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
 		self.backgroundColor = [UIColor colorWithRed:3/255.0f green:3/255.0f  blue:3/255.0f  alpha:0.8];
+        
+                
+        
 
 //		CAGradientLayer *layer = (CAGradientLayer *)self.layer;
 //		UIColor *liteColor = [UIColor colorWithWhite:0.82f alpha:0.8f];
@@ -194,6 +220,9 @@
 
 		[self addSubview:shadowView]; // Add the shadow to the view
 
+
+        
+        
 		CGFloat numberY = (0.0f - (PAGE_NUMBER_HEIGHT + PAGE_NUMBER_SPACE));
 		CGFloat numberX = ((self.bounds.size.width - PAGE_NUMBER_WIDTH) / 2.0f);
 		CGRect numberRect = CGRectMake(numberX, numberY, PAGE_NUMBER_WIDTH, PAGE_NUMBER_HEIGHT);
@@ -231,13 +260,25 @@
 
 		trackControl = [[ReaderTrackControl alloc] initWithFrame:self.bounds]; // Track control view
 
+        
+        scrollViewmainPagebar = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
+        scrollViewmainPagebar.backgroundColor = [UIColor clearColor];
+        scrollViewmainPagebar.scrollEnabled = YES;
+        scrollViewmainPagebar.pagingEnabled = YES;
+        scrollViewmainPagebar.showsVerticalScrollIndicator = YES;
+        scrollViewmainPagebar.showsHorizontalScrollIndicator = YES;
+        scrollViewmainPagebar.contentSize = CGSizeMake(self.bounds.size.width * 2, self.bounds.size.height);
+        
+        [scrollViewmainPagebar addSubview:trackControl];
+        
+        
 		[trackControl addTarget:self action:@selector(trackViewTouchDown:) forControlEvents:UIControlEventTouchDown];
 		[trackControl addTarget:self action:@selector(trackViewValueChanged:) forControlEvents:UIControlEventValueChanged];
 		[trackControl addTarget:self action:@selector(trackViewTouchUp:) forControlEvents:UIControlEventTouchUpOutside];
 		[trackControl addTarget:self action:@selector(trackViewTouchUp:) forControlEvents:UIControlEventTouchUpInside];
 
-		[self addSubview:trackControl]; // Add the track control and thumbs view
-        
+		//[self addSubview:trackControl]; // Add the track control and thumbs view
+        [self addSubview:scrollViewmainPagebar];
        
         mainDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
             self.user =  mainDelegate.user ;
@@ -262,11 +303,12 @@
 
 - (void)layoutSubviews
 {
+    
 	CGRect controlRect = CGRectInset(self.bounds, 4.0f, 0.0f);
 
 	CGFloat thumbWidth = (THUMB_SMALL_WIDTH + THUMB_SMALL_GAP);
 
-	NSInteger thumbs = (controlRect.size.width / thumbWidth);
+	//NSInteger thumbs = (controlRect.size.width / thumbWidth);
 
 	//NSInteger pages = [document.pageCount integerValue]; // Pages
     CCorrespondence *correspondence;
@@ -276,7 +318,25 @@
         correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
     }
     
-    NSInteger pages=correspondence.attachmentsList.count;
+    thumbnailrarray = [[NSMutableArray alloc] init];
+    
+    
+    if (correspondence.attachmentsList.count>0)
+    {
+        for(CAttachment* doc in correspondence.attachmentsList)
+        {
+            if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+                [thumbnailrarray addObject:doc];
+            }
+            
+            
+        }
+    }
+    
+    NSInteger pages=thumbnailrarray.count;
+    
+    NSInteger thumbs = pages;
+
    
 	if (thumbs > pages) thumbs = pages; // No more than total pages
 
@@ -286,7 +346,16 @@
 
 	CGFloat widthDelta = (self.bounds.size.width - controlWidth);
 
-	NSInteger X = (widthDelta / 2.0f); controlRect.origin.x = X;
+	NSInteger X = (widthDelta / 2.0f);
+    
+    if(X<0){
+        controlRect.origin.x = 0;
+    }
+    else{
+        controlRect.origin.x = X;
+    }
+    
+    
 
 	trackControl.frame = controlRect; // Update track control frame
 
@@ -319,52 +388,108 @@
 
 	NSMutableDictionary *thumbsToHide = [miniThumbViews mutableCopy];
 
+    
+    
+    
+
+
+    
+    
+    
+    
    
-	for (NSInteger thumb = 0; thumb < thumbs; thumb++) // Iterate through needed thumbs
-	{
-      
-		NSInteger page = ((stride * thumb) + 1); if (page > pages) page = pages; // Page
+//	for (NSInteger thumb = 0; thumb < thumbs; thumb++) // Iterate through needed thumbs
+//	{
+//      
+//		NSInteger page = ((stride * thumb) + 1);
+//        if (page > pages)
+//            page = pages; // Page
+//
+//		NSNumber *key = [NSNumber numberWithInteger:page]; // Page number key for thumb view
+//
+//		ReaderPagebarThumb *smallThumbView = [miniThumbViews objectForKey:key]; // Thumb view
+//
+//		if (smallThumbView == nil) // We need to create a new small thumb view for the page number
+//		{
+//
+//
+//			smallThumbView = [[ReaderPagebarThumb alloc] initWithFrame:thumbRect small:YES]; // Create a small thumb view
+//
+//
+//            
+//            
+//            CAttachment*file=correspondence.attachmentsList[thumb];
+//            
+//            
+//
+//                UIImage *image =[UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:file.ThubnailUrl]]];
+//            
+//			if ([image isKindOfClass:[UIImage class]]) [smallThumbView showImage:image]; // Use thumb image from cache
+//
+//			[trackControl addSubview:smallThumbView]; [miniThumbViews setObject:smallThumbView forKey:key];
+//		}
+//		else // Resue existing small thumb view for the page number
+//		{
+//			smallThumbView.hidden = NO; [thumbsToHide removeObjectForKey:key];
+//
+//			if (CGRectEqualToRect(smallThumbView.frame, thumbRect) == false)
+//			{
+//				smallThumbView.frame = thumbRect; // Update thumb frame
+//			}
+//		}
+//
+//		thumbRect.origin.x += thumbWidth; // Next thumb X position
+//	}
 
+    
+  for (NSInteger thumb = 0; thumb < thumbnailrarray.count; thumb++)
+  {
+        
+		NSInteger page = ((stride * thumb) + 1);
+        if (page > pages)
+            page = pages; // Page
+        
 		NSNumber *key = [NSNumber numberWithInteger:page]; // Page number key for thumb view
-
+        
 		ReaderPagebarThumb *smallThumbView = [miniThumbViews objectForKey:key]; // Thumb view
-
+        
 		if (smallThumbView == nil) // We need to create a new small thumb view for the page number
 		{
-			CGSize size = CGSizeMake(THUMB_SMALL_WIDTH, THUMB_SMALL_HEIGHT); // Maximum thumb size
-
-			//NSURL *fileURL = document.fileURL; NSString *guid = document.guid; NSString *phrase = document.password;
-
+            
+            
 			smallThumbView = [[ReaderPagebarThumb alloc] initWithFrame:thumbRect small:YES]; // Create a small thumb view
+            
+            
+            
+            
+            CAttachment*file=thumbnailrarray[thumb];
+            
+                   //johnny here
+            
+            UIImage *image =[UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:file.ThubnailUrl]]];
+            
+           //   UIImage *image =[UIImage imageNamed:@"file.png"];
+            
+            [smallThumbView showLabel:file.location];
 
-			//ReaderThumbRequest *thumbRequest = [ReaderThumbRequest newForView:smallThumbView fileURL:fileURL password:phrase guid:guid page:page size:size];
-
-			//UIImage *image = [[ReaderThumbCache sharedInstance] thumbRequest:thumbRequest priority:NO]; // Request the thumb
             
-            
-            CAttachment*file=correspondence.attachmentsList[thumb];
-            
-           
-            NSData * data = [NSData dataWithBase64EncodedString:file.thumbnailBase64];
-            
-            UIImage *image = [UIImage imageWithData:data];
 			if ([image isKindOfClass:[UIImage class]]) [smallThumbView showImage:image]; // Use thumb image from cache
-
+            
 			[trackControl addSubview:smallThumbView]; [miniThumbViews setObject:smallThumbView forKey:key];
 		}
 		else // Resue existing small thumb view for the page number
 		{
 			smallThumbView.hidden = NO; [thumbsToHide removeObjectForKey:key];
-
+            
 			if (CGRectEqualToRect(smallThumbView.frame, thumbRect) == false)
 			{
 				smallThumbView.frame = thumbRect; // Update thumb frame
 			}
 		}
-
+        
 		thumbRect.origin.x += thumbWidth; // Next thumb X position
 	}
-
+    
 	[thumbsToHide enumerateKeysAndObjectsUsingBlock: // Hide unused thumbs
 		^(id key, id object, BOOL *stop)
 		{
@@ -394,6 +519,8 @@
 {
 	if (self.hidden == NO) // Only if visible
 	{
+        
+        [thumbnailrarray removeAllObjects];
 		[UIView animateWithDuration:0.25 delay:0.0
 			options:UIViewAnimationOptionCurveLinear | UIViewAnimationOptionAllowUserInteraction
 			animations:^(void)
@@ -470,12 +597,14 @@
         correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
     }
     
-    NSInteger pages=correspondence.attachmentsList.count;
+    NSInteger pages=thumbnailrarray.count;
     
 	CGFloat stride = (controlWidth / pages);
 
 	NSInteger page = (trackView.value / stride); // Integer page number
-
+    
+    mainDelegate.attachmentSelected = page;
+    
 	return (page + 1); // + 1
 }
 
@@ -516,11 +645,11 @@
 - (void)trackViewTouchUp:(ReaderTrackControl *)trackView
 {
 	[trackTimer invalidate]; trackTimer = nil; // Cleanup
-
+    
 	if (trackView.tag != self.attachmentId) // Only if different
 	{
 		trackView.userInteractionEnabled = NO; // Disable track control interaction
-  
+        
         CCorrespondence *correspondence;
         if(self.menuId!=100){
             correspondence= ((CMenu*)self.user.menu[self.menuId]).correspondenceList[self.correspondenceId];
@@ -528,28 +657,98 @@
             correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
         }
         
-       
-        CAttachment *fileToOpen=correspondence.attachmentsList[self.attachmentId];
+        thumbnailrarray = [[NSMutableArray alloc] init];
         
-        NSString *tempPdfLocation=[fileToOpen saveInCacheinDirectory:correspondence.Id fromSharepoint:mainDelegate.isSharepoint];
-        ReaderDocument *newDocument=nil;
-        if ([ReaderDocument isPDF:tempPdfLocation] == YES) // File must exist
+        
+        if (correspondence.attachmentsList.count>0)
         {
-            newDocument=[self OpenPdfReader:tempPdfLocation];
-
-            
+            for(CAttachment* doc in correspondence.attachmentsList)
+            {
+                if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+                    [thumbnailrarray addObject:doc];
+                }
+                
+                
             }
-       // NSString *tempPdfLocation=[CParser loadPdfFile:fileToOpen.url inDirectory:correspondence.Id];
-               
+        }
         
-		[delegate pagebar:self gotoPage:1 document:newDocument fileId:self.attachmentId]; // Go to document page
-
-		
+        CAttachment *fileToOpen=thumbnailrarray[self.attachmentId];
         
-        [self startEnableTimer]; // Start track control enable timer
+      
+        
+        
+        NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
+        [SVProgressHUD showWithStatus:NSLocalizedString(@"Alert.Loading",@"Loading ...") maskType:SVProgressHUDMaskTypeBlack];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+            
+            
+              if([fileToOpen.url isEqualToString:@""]){
+            
+            NSString* attachmentUrl = [NSString stringWithFormat:@"http://%@?action=GetAttachment&token=%@&fileURL=%@&SPSiteId=%@&SPWebId=%@&SPFileId=%@",serverUrl,mainDelegate.user.token,fileToOpen.FileUrl,fileToOpen.SiteId,fileToOpen.WebId,fileToOpen.FileId];
+            
+            NSString* urlTextEscaped = [attachmentUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            
+            NSURL *xmlUrl = [NSURL URLWithString:urlTextEscaped];
+            NSData *attachmentXmlData = [[NSMutableData alloc] initWithContentsOfURL:xmlUrl];
+            
+            
+            
+            
+            NSError *error;
+            GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:attachmentXmlData
+                                                                   options:0 error:&error];
+            
+            NSArray *Attachments = [doc nodesForXPath:@"//Attachments" error:nil];
+            
+            GDataXMLElement *AttachmentsXML;
+            if (Attachments.count > 0) {
+                AttachmentsXML =  [Attachments objectAtIndex:0];
+            }
+            
+            NSArray *attachmentXML = [AttachmentsXML elementsForName:@"Attachment"];
+            
+            
+            for(GDataXMLElement *attachment in attachmentXML)
+            {
+                NSArray *urls = [attachment elementsForName:@"url"];
+                if (urls.count > 0) {
+                    GDataXMLElement *urlEl = (GDataXMLElement *) [urls objectAtIndex:0];
+                    fileToOpen.url = urlEl.stringValue;
+                }
+            }
+              }
+            
+            mainDelegate.AttachmentId=fileToOpen.AttachmentId;
+            
+            
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSString *tempPdfLocation=[fileToOpen saveInCacheinDirectory:correspondence.Id fromSharepoint:mainDelegate.isSharepoint];
+                
+                ReaderDocument *newDocument=nil;
+                if ([ReaderDocument isPDF:tempPdfLocation] == YES) // File must exist
+                {
+                    newDocument=[self OpenPdfReader:tempPdfLocation];
+                    
+                    
+                }
+                // NSString *tempPdfLocation=[CParser loadPdfFile:fileToOpen.url inDirectory:correspondence.Id];
+                
+                
+                [delegate pagebar:self gotoPage:1 document:newDocument fileId:self.attachmentId]; // Go to document page
+                
+                
+                
+                [self startEnableTimer]; // Start track control enable timer
+                [SVProgressHUD dismiss];
+                
+            });});
+        
 	}
-
+    
 	trackView.tag = 0; // Reset page tracking
+    
+    
 }
 
 -(ReaderDocument*) OpenPdfReader:(NSString *) pdfPath{
@@ -668,11 +867,13 @@
 
 		UIColor *background = [UIColor colorWithWhite:0.8f alpha:value];
 
-		self.backgroundColor = background; imageView.backgroundColor = background;
+		self.backgroundColor = [UIColor clearColor];
+        imageView.backgroundColor =[UIColor clearColor];
+        
 
-		imageView.layer.borderColor = [UIColor colorWithWhite:0.4f alpha:0.6f].CGColor;
+		//imageView.layer.borderColor = [UIColor colorWithWhite:0.4f alpha:0.6f].CGColor;
 
-		imageView.layer.borderWidth = 1.0f; // Give the thumb image view a border
+		//imageView.layer.borderWidth = 1.0f; // Give the thumb image view a border
 	}
 
 	return self;

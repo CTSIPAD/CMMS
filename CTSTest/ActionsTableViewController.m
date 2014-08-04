@@ -9,17 +9,23 @@
 #import "ActionsTableViewController.h"
 #import "CAction.h"
 #import "CUser.h"
+#import "CMenu.h"
 #import "CParser.h"
 #import "CFPendingAction.h"
-
+#import "HomeViewController.h"
+#import "MainMenuViewController.h"
+#import "CSearch.h"
+#import "ReaderMainToolbar.h"
+#import "AppDelegate.h"
 @interface ActionsTableViewController ()
 
 @end
 
 @implementation ActionsTableViewController{
     AppDelegate *mainDelegate;
+    AppDelegate *appDelegate;
 }
-
+@synthesize document;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -81,13 +87,12 @@
     labelTitle.backgroundColor = [UIColor clearColor];
     
     CAction *actionProperty=self.actions[indexPath.row];
-   
+    UIImage *cellImage;
     labelTitle.text=actionProperty.label;
     
-    NSData * data = [NSData dataWithBase64EncodedString:actionProperty.icon];
+        NSString* imagename=[NSString stringWithFormat:@"%@.png",actionProperty.label];
+        cellImage =  [UIImage imageNamed:imagename] ;//[UIImage imageWithData:data];
     
-    UIImage *cellImage = [UIImage imageWithData:data];
-
     [imageView setImage:cellImage];
     if([mainDelegate.userLanguage.lowercaseString isEqualToString:@"ar"]){
         labelTitle.textAlignment=NSTextAlignmentRight;
@@ -102,35 +107,32 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath  {
     
-     CAction *actionProperty=self.actions[indexPath.row];
+    CAction *actionProperty=self.actions[indexPath.row];
+    if([actionProperty.action isEqualToString:@"Archive"]){
     [self executeAction:actionProperty.action];
-   
-}
+        [_delegate movehome:self];
+    }
+    else
+    if([actionProperty.action isEqualToString:@"SendFromPresident"]){
+        [_delegate PopUpCommentDialog:self Action:actionProperty];
+    }
+    else if([actionProperty.action isEqualToString:@"SendToPresident"]){
+        [SVProgressHUD showWithStatus:NSLocalizedString(@"Alert.Send",@"Sending ...") maskType:SVProgressHUDMaskTypeBlack];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
 
--(void)executeAction:(NSString*)action{
-    
-    @try{
-    NSString* params=[NSString stringWithFormat:@"action=ExecuteCustomActions&token=%@&correspondenceId=%@&docId=%@&actionType=%@",self.user.token,self.correspondenceId,self.docId,action];
-    NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
-    NSString* url = [NSString stringWithFormat:@"http://%@?%@",serverUrl,params];
-    NSURL *xmlUrl = [NSURL URLWithString:url];
-    NSData *xmlData = [[NSMutableData alloc] initWithContentsOfURL:xmlUrl];
-    NSString *validationResultAction=[CParser ValidateWithData:xmlData];
-    
-    if(![validationResultAction isEqualToString:@"OK"])
-    { if([validationResultAction isEqualToString:@"Cannot access to the server"])
-    {
-        CFPendingAction*pa = [[CFPendingAction alloc] initWithActionUrl:url];
-        [mainDelegate.user addPendingAction:pa];
-    }else
-        [self ShowMessage:validationResultAction];
-        
-    }else [self ShowMessage:@"Action successfuly done."];
+        [_delegate send:actionProperty.action note:@""];
+        [_delegate movehome:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+    });
+
     }
-    @catch (NSException *ex) {
-        [FileManager appendToLogView:@"ActionsTableViewController" function:@"executeAction" ExceptionTitle:[ex name] exceptionReason:[ex reason]];
+
+    else{
+        [_delegate PopUpCommentDialog:self Action:actionProperty];
+
     }
-    
 }
 
 -(void)ShowMessage:(NSString*)message{
@@ -143,7 +145,99 @@
                           cancelButtonTitle:NSLocalizedString(@"OK",@"OK")
                           otherButtonTitles: nil];
     [alert show];
+    
+    
 }
+-(void)executeAction:(NSString*)action{
+    
+    @try{
+        
+       
+        
+    NSString* params=[NSString stringWithFormat:@"action=ExecuteCustomActions&token=%@&correspondenceId=%@&docId=%@&actionType=%@", mainDelegate.user.token,self.correspondenceId,self.docId,action];
+   NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
+    NSString* url = [NSString stringWithFormat:@"http://%@?%@",serverUrl,params];
+    NSURL *xmlUrl = [NSURL URLWithString:url];
+    NSData *xmlData = [[NSMutableData alloc] initWithContentsOfURL:xmlUrl];
+    NSString *validationResultAction=[CParser ValidateWithData:xmlData];
+    
+    if(![validationResultAction isEqualToString:@"OK"])
+    {
+        if([validationResultAction isEqualToString:@"Cannot access to the server"])
+        {
+            CFPendingAction*pa = [[CFPendingAction alloc] initWithActionUrl:url];
+            [mainDelegate.user addPendingAction:pa];
+        }else
+        
+            [self ShowMessage:validationResultAction];
+        
+    }else {
+        
+        int nb;
+        
+        NSString *t=((CMenu*)mainDelegate.user.menu[mainDelegate.selectedInbox-1]).name;
+        
+        if([t isEqual:@"Meeting Agenda"]){
+            nb=8;
+        }
+        else{
+            if([t isEqual:@"Meeting Minutes"]){
+                nb=14;
+            }
+            else{
+                if([t isEqual:@"Tender Award Minutes"]){
+                    nb=8;
+                }
+            }
+        }
+        
+        NSString* correspondenceUrl = [NSString stringWithFormat:@"http://%@?action=GetCorrespondences&token=%@&inboxIds=%d",serverUrl,mainDelegate.user.token,nb];
+        NSURL *xmlUrl = [NSURL URLWithString:correspondenceUrl];
+        NSData *menuXmlData = [[NSMutableData alloc] initWithContentsOfURL:xmlUrl];
+        
+        NSMutableDictionary *correspondences=[CParser loadCorrespondencesWithData:menuXmlData];
+        
+
+        mainDelegate.searchModule.correspondenceList = [correspondences objectForKey:[NSString stringWithFormat:@"%d",nb]];
+        
+        [self ShowMessage:@"Action successfuly done."];
+        
+        
+
+        
+        
+    }
+    }
+    @catch (NSException *ex) {
+        [FileManager appendToLogView:@"ActionsTableViewController" function:@"executeAction" ExceptionTitle:[ex name] exceptionReason:[ex reason]];
+    }
+    
+}
+
+
+
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    
+    if(buttonIndex==0){
+        
+        
+        
+//        UIViewController *localdetailViewController=nil;
+//           UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+//           [flowLayout setScrollDirection:UICollectionViewScrollDirectionHorizontal];
+//           [flowLayout setMinimumInteritemSpacing:5.0f];
+//           [flowLayout setMinimumLineSpacing:5.0f];
+//          HomeViewController *detail = [[HomeViewController alloc]initWithCollectionViewLayout:flowLayout];
+//           localdetailViewController=detail;
+//          UINavigationController *navController=[[UINavigationController alloc] init];
+//          [navController setNavigationBarHidden:YES animated:NO];
+//        [navController pushViewController:localdetailViewController animated:YES];
+        //HomeViewController *home=[[HomeViewController alloc]init];
+        //[self presentedViewController:home animated:YES completion:nil];
+    }
+}
+
+
 
 
 

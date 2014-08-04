@@ -22,7 +22,8 @@
 //	WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 //	CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
+#import "ReaderViewController.h"
+#import "GDataXMLNode.h"
 #import "ReaderConstants.h"
 #import "ReaderMainToolbar.h"
 #import "ReaderDocument.h"
@@ -47,11 +48,13 @@
 
     
     NSInteger correspondencesCount;
+    //jen PreviousNext
+    NSInteger attachementsCount;
     AppDelegate *mainDelegate;
     NSString* pageName;
     CCorrespondence *correspondence;
 }
-@synthesize nextButton,previousButton,actionsButton,transferButton,attachmentButton,metadataButton,lockButton,commentsButton,annotationButton,lblTitle;
+@synthesize nextButton,previousButton,actionsButton,transferButton,attachmentButton,metadataButton,lockButton,commentsButton,annotationButton,lblTitle,closeButton,actionButton;
 #pragma mark Constants
 
 #define BUTTON_X 8.0f
@@ -81,9 +84,25 @@
 - (id)initWithFrame:(CGRect)frame document:(ReaderDocument *)object CorrespondenceId:(NSInteger)correspondenceId MenuId:(NSInteger)menuId AttachmentId:(NSInteger)attachmentId
 {
 	assert(object != nil); // Must have a valid ReaderDocument
-
 	if ((self = [super initWithFrame:frame]))
 	{
+        
+        closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [closeButton setTintColor:[UIColor whiteColor]];
+        [closeButton setTitle:[NSString stringWithFormat:@"Hide Menu"] forState:UIControlStateNormal];
+        [closeButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 0, -80,0)];
+        [closeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        closeButton.titleLabel.font = [UIFont systemFontOfSize:12];
+        [closeButton setBackgroundImage:[UIImage imageNamed:@"arrowup2.png"] forState:UIControlStateNormal];
+        [closeButton addTarget:self action:@selector(hideToolbar) forControlEvents:UIControlEventTouchUpInside];
+        
+        
+
+
+        
+        
+        [self addSubview:closeButton];
+        
         self.menuId=menuId;
         self.correspondenceId=correspondenceId;
         self.attachmentId=attachmentId;
@@ -97,20 +116,58 @@
         if(menuId!=100){
             correspondence=((CMenu*)self.user.menu[menuId]).correspondenceList[correspondenceId];
              correspondencesCount=((CMenu*)self.user.menu[menuId]).correspondenceList.count;
-        }else{ correspondence=mainDelegate.searchModule.correspondenceList[0];
+            //jen PreviousNext
+            NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
+            
+            
+            if (correspondence.attachmentsList.count>0)
+            {
+                for(CAttachment* doc in correspondence.attachmentsList)
+                {
+                    if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+                        [thumbnailrarray addObject:doc];
+                    }
+                    
+                    
+                }
+            }
+
+            attachementsCount=thumbnailrarray.count;
+        }else{
+            
+            correspondence=mainDelegate.searchModule.correspondenceList[mainDelegate.searchSelected];
              correspondencesCount=mainDelegate.searchModule.correspondenceList.count;
+            //jen PreviousNext
+            NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
+            
+            
+            if (correspondence.attachmentsList.count>0)
+            {
+                for(CAttachment* doc in correspondence.attachmentsList)
+                {
+                    if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+                        [thumbnailrarray addObject:doc];
+                    }
+                    
+                    
+                }
+            }
+
+            //attachementsCount=thumbnailrarray.count;
+            attachementsCount=correspondence.attachmentsList.count;
+
         }
         
         lblTitle=[[UILabel alloc]initWithFrame:CGRectMake(20, 15, self.frame.size.width, 15)];
         lblTitle.font = [UIFont fontWithName:@"Helvetica" size:12];
         lblTitle.textColor=[UIColor colorWithRed:204/255.0f green:233/255.0f blue:247/255.0f alpha:1.0];
-        //lblTitle.textAlignment=NSTextAlignmentCenter;
+
         [self addSubview:lblTitle];
         
        homeButton = [UIButton buttonWithType:UIButtonTypeCustom];
         homeButton.frame = CGRectMake(leftButtonX, 30, btnWidth, 90);
         [homeButton setBackgroundImage:[UIImage imageNamed:@"HomeIcon.png"] forState:UIControlStateNormal];
-        //[homeButton setImageEdgeInsets:UIEdgeInsetsMake(0, 17, 10, 0)];
+
         [homeButton setTitleEdgeInsets:UIEdgeInsetsMake(55, 10, 0,10)];
         [homeButton setTitle:NSLocalizedString(@"Menu.Home",@"Home") forState:UIControlStateNormal];
         homeButton.titleLabel.font=[UIFont fontWithName:@"Helvetica" size:14];
@@ -135,16 +192,8 @@
         [nextButton setTitleColor:[UIColor whiteColor]forState:UIControlStateNormal];
         [nextButton setTitleColor:[UIColor grayColor]forState:UIControlStateDisabled];
          [nextButton addTarget:self action:@selector(nextButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-       [self addSubview:nextButton];
-       
-        
-
-        
-        
-       
-    
-        
-        if(correspondenceId==correspondencesCount-1){
+       //jen PreviousNext
+        if(attachmentId==attachementsCount-1){
             nextButton.enabled=FALSE;
         }
         else  nextButton.enabled=TRUE;
@@ -152,19 +201,22 @@
         previousButton = [UIButton buttonWithType:UIButtonTypeCustom];
         rightButtonX -= (65 + 10);
         previousButton.frame = CGRectMake(rightButtonX, 30, 65, 90);
-        //[previousButton setImage:[UIImage imageNamed:@"previous.png"] forState:UIControlStateNormal];
          [previousButton setBackgroundImage: [UIImage imageNamed:@"previous.png"] forState:UIControlStateNormal];
-       // previousButton.titleEdgeInsets = UIEdgeInsetsMake(0.0, - imageSize.width, - (imageSize.height + spacing), 0.0);
-       // previousButton.imageEdgeInsets = UIEdgeInsetsMake(- (titleSize.height + spacing), -17, 0.0, - titleSize.width);
-       // [previousButton setImageEdgeInsets:UIEdgeInsetsMake(-15, 0, 10, 10)];
         [previousButton setTitleEdgeInsets:UIEdgeInsetsMake(55, 0, 0,0)];
         [previousButton setTitle:NSLocalizedString(@"Menu.Previous",@"Previous") forState:UIControlStateNormal];
         previousButton.titleLabel.font=[UIFont fontWithName:@"Helvetica" size:13];
         [previousButton setTitleColor:[UIColor whiteColor]forState:UIControlStateNormal];
         [previousButton setTitleColor:[UIColor grayColor]forState:UIControlStateDisabled];
        [previousButton addTarget:self action:@selector(previousButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:previousButton];
-        if(correspondenceId==0){
+         if([[correspondence.toolbar objectForKey:@"NextPrevious"] isEqualToString:@"YES"]){
+             [self addSubview:previousButton];
+             [self addSubview:nextButton];
+         }
+        //jen PreviousNext
+//        if(correspondenceId==0){
+//            previousButton.enabled=FALSE;
+//        }
+        if(attachmentId==0){
             previousButton.enabled=FALSE;
         }
         else  previousButton.enabled=TRUE;
@@ -172,30 +224,28 @@
         lockButton = [UIButton buttonWithType:UIButtonTypeCustom];
         rightButtonX -= (65 + 10);
         lockButton.frame = CGRectMake(rightButtonX, 30, 65, 90);
-        //[previousButton setImage:[UIImage imageNamed:@"previous.png"] forState:UIControlStateNormal];
+
         if(correspondence.Locked==YES){
-        [lockButton setBackgroundImage: [UIImage imageNamed:@"Unlock.png"] forState:UIControlStateNormal];
+            [lockButton setBackgroundImage: [UIImage imageNamed:@"Unlock.png"] forState:UIControlStateNormal];
             [lockButton setBackgroundImage: [UIImage imageNamed:@"Lock.png"] forState:UIControlStateSelected];
              [lockButton setTitle:NSLocalizedString(@"Menu.Unlock",@"unlock") forState:UIControlStateNormal];
             
         }
-        else{ [lockButton setBackgroundImage: [UIImage imageNamed:@"Lock.png"] forState:UIControlStateNormal];
+        else{
+            [lockButton setBackgroundImage: [UIImage imageNamed:@"Lock.png"] forState:UIControlStateNormal];
              [lockButton setBackgroundImage: [UIImage imageNamed:@"Unlock.png"] forState:UIControlStateSelected];
              [lockButton setTitle:NSLocalizedString(@"Menu.Lock",@"lock") forState:UIControlStateNormal];
             
         }
-        // previousButton.titleEdgeInsets = UIEdgeInsetsMake(0.0, - imageSize.width, - (imageSize.height + spacing), 0.0);
-        // previousButton.imageEdgeInsets = UIEdgeInsetsMake(- (titleSize.height + spacing), -17, 0.0, - titleSize.width);
-        // [previousButton setImageEdgeInsets:UIEdgeInsetsMake(-15, 0, 10, 10)];
+
         [lockButton setTitleEdgeInsets:UIEdgeInsetsMake(55, 0, 0,0)];
        
         lockButton.titleLabel.font=[UIFont fontWithName:@"Helvetica" size:13];
         [lockButton setTitleColor:[UIColor whiteColor]forState:UIControlStateNormal];
         [lockButton setTitleColor:[UIColor grayColor]forState:UIControlStateDisabled];
         [lockButton addTarget:self action:@selector(lockButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:lockButton];
+
         [self updateToolbar];
-        
     }
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
@@ -206,19 +256,32 @@
 }
 
 -(void)adjustButtons:(UIInterfaceOrientation)orientation{
+     correspondence=mainDelegate.searchModule.correspondenceList[mainDelegate.searchSelected];
     if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown) {
         lockButton.frame=CGRectMake(560, 30, 65, 90);
        previousButton.frame=CGRectMake(630, 30, 65, 90);
          nextButton.frame = CGRectMake(700,30, 65, 90);
-       // lblTitle.frame = CGRectMake(0, 15, 765, 15);
+//        closeButton.frame = CGRectMake(570,100, 200, 40);
+        if([[correspondence.toolbar objectForKey:@"NextPrevious"] isEqualToString:@"NO"])
+            closeButton.frame = CGRectMake(680,30, 65, 65);
+        else
+            closeButton.frame = CGRectMake(560,30, 65, 65);
     } else {
          lockButton.frame=CGRectMake(810, 30, 65, 90);
         previousButton.frame=CGRectMake(880, 30, 65, 90);
          nextButton.frame = CGRectMake(950, 30, 65, 90);
+        if([[correspondence.toolbar objectForKey:@"NextPrevious"] isEqualToString:@"NO"])
+            closeButton.frame = CGRectMake(930, 30, 65, 65);
+        else
+            closeButton.frame = CGRectMake(805, 30, 65, 65);
         //lblTitle.frame = CGRectMake(0, 15, 1024, 15);
     }
 }
 
+-(void)desableButtons{
+    [annotationButton removeFromSuperview];
+    [transferButton removeFromSuperview];
+}
 
 - (void)setBookmarkState:(BOOL)state
 {
@@ -283,7 +346,7 @@
 {
 	if (self.hidden == YES)
 	{
-		[self updateBookmarkImage]; // First
+		//[self updateBookmarkImage]; // First
 
 		[UIView animateWithDuration:0.25 delay:0.0
 			options:UIViewAnimationOptionCurveLinear | UIViewAnimationOptionAllowUserInteraction
@@ -310,7 +373,11 @@
 
 
 #pragma mark UIButton action methods
+- (void)SignAction:(UIButton *)button
+{
 
+	[delegate tappedInToolbar:self SignActionButton:button];
+}
 
 - (void)homeButtonTapped:(UIButton *)button
 {
@@ -343,6 +410,11 @@
 - (void)annotationButtonTapped:(UIButton *)button
 {
 	[delegate tappedInToolbar:self annotationButton:button];
+}
+//jen (accept..)
+-(void)actionButtonTapped:(UIButton *)button
+{
+    [delegate tappedInToolbar:self actionButton:button];
 }
 - (void)transferButtonTapped:(UIButton *)button
 {
@@ -401,52 +473,202 @@ BOOL lockSelected=NO;
 
 - (void)nextButtonTapped :(UIButton *)button
 {
+    //jen PreviousNext
+    CAttachment *fileToOpen;
+   // self.correspondenceId=self.correspondenceId+1;
+    self.attachmentId=self.attachmentId+1;
+
     
-    self.correspondenceId=self.correspondenceId+1;
-
-    if(self.menuId!=100){
-    correspondence= ((CMenu*)self.user.menu[self.menuId]).correspondenceList[self.correspondenceId];
-    }else{
+     mainDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    
+    mainDelegate.attachmentType = @"nextprevioustype";
+    
         correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
-    }
-   
-    CAttachment *fileToOpen=correspondence.attachmentsList[0];
-   // [self updateTitleWithLocation:fileToOpen.location withName:fileToOpen.title];
-     NSString *tempPdfLocation=[fileToOpen saveInCacheinDirectory:correspondence.Id fromSharepoint:mainDelegate.isSharepoint];
-   //  NSString *tempPdfLocation=[CParser loadPdfFile:fileToOpen.url inDirectory:correspondence.Id];
-    ReaderDocument *newdocument=nil;
-    if ([ReaderDocument isPDF:tempPdfLocation] == YES) // File must exist
-    {
-    newdocument=[self OpenPdfReader:tempPdfLocation];
-    }
-	[delegate tappedInToolbar:self nextButton:button documentReader:newdocument correspondenceId:self.correspondenceId];
-   
-    if(self.correspondenceId==correspondencesCount-1){
-        button.enabled=FALSE;
-    }
-    else  button.enabled=TRUE;
-    if(self.correspondenceId==0){
-        previousButton.enabled=FALSE;
+        //jen PreviousNext
+       // NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
         
-    }
-    else  previousButton.enabled=TRUE;
-    lockSelected=NO;
-   [self updateToolbar];
-   }
+        
+//        if (correspondence.attachmentsList.count>0)
+//        {
+//            for(CAttachment* doc in correspondence.attachmentsList)
+//            {
+//                if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+//                    [thumbnailrarray addObject:doc];
+//                }
+//                
+//                
+//            }
+//        }
 
+   
+    fileToOpen=correspondence.attachmentsList[self.attachmentId];
+    [self updateTitleWithLocation:fileToOpen.location withName:fileToOpen.title];
+
+    //jis next
+    [self performSelectorOnMainThread:@selector(increaseProgress) withObject:@"" waitUntilDone:YES];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+
+    if([fileToOpen.url isEqualToString:@""]){
+       
+        [mainDelegate.folderNames addObject:fileToOpen.FolderName];
+        
+        NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
+        
+        int docId = [correspondence.Id intValue];
+        
+        NSString* attachmentUrl = [NSString stringWithFormat:@"http://%@?action=GetFolderAttachments&token=%@&docId=%d&folderName=%@",serverUrl,mainDelegate.user.token,docId,fileToOpen.FolderName];
+        
+        NSString* urlTextEscaped = [attachmentUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        
+        NSURL *xmlUrl = [NSURL URLWithString:urlTextEscaped];
+        
+                  NSData *attachmentXmlData = [[NSMutableData alloc] initWithContentsOfURL:xmlUrl];
+        
+        
+        
+        
+        NSError *error;
+        GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:attachmentXmlData
+                                                               options:0 error:&error];
+        
+        NSArray *Attachments = [doc nodesForXPath:@"//Attachments" error:nil];
+        
+        GDataXMLElement *AttachmentsXML;
+        if (Attachments.count > 0) {
+            AttachmentsXML =  [Attachments objectAtIndex:0];
+        }
+        
+        NSArray *attachmentXML = [AttachmentsXML elementsForName:@"Attachment"];
+        
+        NSString *urlattach;
+        NSString *idattach;
+        NSString *thumbnailurlattach;
+        
+        for(GDataXMLElement *attachment in attachmentXML)
+        {
+            NSArray *ids = [attachment elementsForName:@"AttachmentId"];
+            if (ids.count > 0) {
+                GDataXMLElement *idEl = (GDataXMLElement *) [ids objectAtIndex:0];
+                idattach = idEl.stringValue;
+            }
+            
+            NSArray *urls = [attachment elementsForName:@"url"];
+            if (urls.count > 0) {
+                GDataXMLElement *urlEl = (GDataXMLElement *) [urls objectAtIndex:0];
+                urlattach = urlEl.stringValue;
+            }
+            
+            NSArray *thumbnailurls = [attachment elementsForName:@"ThumbnailUrl"];
+            if (thumbnailurls.count > 0) {
+                GDataXMLElement *thumbnailurlEl = (GDataXMLElement *) [thumbnailurls objectAtIndex:0];
+                thumbnailurlattach = thumbnailurlEl.stringValue;
+            }
+            
+            for(CAttachment* doc in correspondence.attachmentsList)
+            {
+                if([doc.AttachmentId isEqualToString: idattach]){
+                    doc.ThubnailUrl = thumbnailurlattach;
+                    doc.url = urlattach;
+                }
+            }
+            }
+        }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSString *tempPdfLocation=[fileToOpen saveInCacheinDirectory:fileToOpen.docId fromSharepoint:mainDelegate.isSharepoint];
+                //  NSString *tempPdfLocation=[CParser loadPdfFile:fileToOpen.url inDirectory:correspondence.Id];
+                ReaderDocument *newdocument=nil;
+                if ([ReaderDocument isPDF:tempPdfLocation] == YES) // File must exist
+                {
+                    newdocument=[self OpenPdfReader:tempPdfLocation];
+                }
+                
+                //jen PreviousNext
+                //[delegate tappedInToolbar:self nextButton:button documentReader:newdocument correspondenceId:self.correspondenceId];
+                [delegate tappedInToolbar:self nextButton:button documentReader:newdocument correspondenceId:self.correspondenceId attachementId:self.attachmentId];
+                
+                if(self.attachmentId==attachementsCount-1){
+                    button.enabled=FALSE;
+                }
+                else  button.enabled=TRUE;
+                
+                if(self.attachmentId==0){
+                    previousButton.enabled=FALSE;
+                }
+                else  previousButton.enabled=TRUE;
+                lockSelected=NO;
+                [self updateToolbar];
+                [SVProgressHUD dismiss];
+
+            });
+        });
+        
+
+    
+    
+    
+      }
+- (void)increaseProgress{
+    [SVProgressHUD showWithStatus:NSLocalizedString(@"Alert.Downloading",@"Downloading ...") maskType:SVProgressHUDMaskTypeBlack];
+    
+    
+}
 - (void)previousButtonTapped :(UIButton *)button
 {
-    self.correspondenceId=self.correspondenceId-1;
-
+    //jen PreviousNExt
+    CAttachment *fileToOpen;
+    //self.correspondenceId=self.correspondenceId-1;
+    
+    mainDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    
+    mainDelegate.attachmentType = @"nextprevioustype";
+    
+    self.attachmentId=self.attachmentId-1;
+    
     if(self.menuId!=100){
         correspondence= ((CMenu*)self.user.menu[self.menuId]).correspondenceList[self.correspondenceId];
+        //jen
+        NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
+        
+        
+        if (correspondence.attachmentsList.count>0)
+        {
+            for(CAttachment* doc in correspondence.attachmentsList)
+            {
+                if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+                    [thumbnailrarray addObject:doc];
+                }
+                
+                
+            }
+        }
+
+        fileToOpen=thumbnailrarray[self.attachmentId];
     }else{
         correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
+        //jen
+        NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
+        
+        
+        if (correspondence.attachmentsList.count>0)
+        {
+            for(CAttachment* doc in correspondence.attachmentsList)
+            {
+                if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+                    [thumbnailrarray addObject:doc];
+                }
+                
+                
+            }
+        }
+
+        //fileToOpen=thumbnailrarray[self.attachmentId];
     }
     
-    CAttachment *fileToOpen=correspondence.attachmentsList[0];
-   // [self updateTitleWithLocation:fileToOpen.location withName:fileToOpen.title];
-     NSString *tempPdfLocation=[fileToOpen saveInCacheinDirectory:correspondence.Id fromSharepoint:mainDelegate.isSharepoint];
+    fileToOpen=correspondence.attachmentsList[self.attachmentId];
+    [self updateTitleWithLocation:fileToOpen.location withName:fileToOpen.title];
+    //jen
+    // NSString *tempPdfLocation=[fileToOpen saveInCacheinDirectory:correspondence.Id fromSharepoint:mainDelegate.isSharepoint];
+    NSString *tempPdfLocation=[fileToOpen saveInCacheinDirectory:fileToOpen.docId fromSharepoint:mainDelegate.isSharepoint];
    // NSString *tempPdfLocation=[CParser loadPdfFile:fileToOpen.url inDirectory:correspondence.Id];
 
     ReaderDocument *document=nil;
@@ -454,17 +676,22 @@ BOOL lockSelected=NO;
     {
         document=[self OpenPdfReader:tempPdfLocation];
     }
-
-	[delegate tappedInToolbar:self previousButton:button documentReader:document correspondenceId:self.correspondenceId];
-    
-    
-    if(self.correspondenceId==0){
-        button.enabled=FALSE;
-    
-    }
+//jen PreviousNext
+	//[delegate tappedInToolbar:self previousButton:button documentReader:document correspondenceId:self.correspondenceId];
+    [delegate tappedInToolbar:self previousButton:button documentReader:document correspondenceId:self.correspondenceId attachementId:self.attachmentId];
+//    if(self.correspondenceId==0){
+//        button.enabled=FALSE;
+//    
+//    }
+    if(self.attachmentId==0){
+            button.enabled=FALSE;
+            }
     else  button.enabled=TRUE;
     
-    if(self.correspondenceId==correspondencesCount-1){
+//    if(self.correspondenceId==correspondencesCount-1){
+//        nextButton.enabled=FALSE;
+//    }
+    if(self.attachmentId==attachementsCount-1){
         nextButton.enabled=FALSE;
     }
     else  nextButton.enabled=TRUE;
@@ -472,6 +699,8 @@ BOOL lockSelected=NO;
    lockSelected=NO;
     [self updateToolbar];
 }
+
+
 
 -(void)updateToolbar{
     NSInteger btnWidth=80;
@@ -482,6 +711,10 @@ BOOL lockSelected=NO;
     [commentsButton removeFromSuperview];
     [annotationButton removeFromSuperview];
     [actionsButton removeFromSuperview];
+    //[acceptButton removeFromSuperview];
+    //[rejectButton removeFromSuperview];
+    //[sendButton removeFromSuperview];
+    [actionButton removeFromSuperview];
     if([[correspondence.toolbar objectForKey:@"Metadata"] isEqualToString:@"YES"]){
         metadataButton = [UIButton buttonWithType:UIButtonTypeCustom];
         metadataButton.frame = CGRectMake(leftButtonX, 30, btnWidth, 90);
@@ -495,7 +728,6 @@ BOOL lockSelected=NO;
         [self addSubview:metadataButton];
         leftButtonX=leftButtonX+btnWidth;
     }
-    
     if([[correspondence.toolbar objectForKey:@"Attachments"] isEqualToString:@"YES"]){
         attachmentButton = [UIButton buttonWithType:UIButtonTypeCustom];
         attachmentButton.frame = CGRectMake(leftButtonX, 30, btnWidth, 90);
@@ -541,8 +773,7 @@ BOOL lockSelected=NO;
         leftButtonX=leftButtonX+btnWidth;
     }
     
-    if([[correspondence.toolbar objectForKey:@"Highlight"] isEqualToString:@"YES"] || [[correspondence.toolbar objectForKey:@"Note"] isEqualToString:@"YES"] ||
-       [[correspondence.toolbar objectForKey:@"Sign"] isEqualToString:@"YES"]){
+    if([[correspondence.toolbar objectForKey:@"Highlight"] isEqualToString:@"YES"] || [[correspondence.toolbar objectForKey:@"Note"] isEqualToString:@"YES"]){
         annotationButton = [UIButton buttonWithType:UIButtonTypeCustom];
         annotationButton.frame = CGRectMake(leftButtonX, 30, btnWidth, 90);
         // [annotationButton setImage:[UIImage imageNamed:@"highlight.png"] forState:UIControlStateNormal];
@@ -557,7 +788,20 @@ BOOL lockSelected=NO;
         [self addSubview:annotationButton];
         leftButtonX=leftButtonX+btnWidth;
     }
-    
+    if([[correspondence.toolbar objectForKey:@"Sign"] isEqualToString:@"YES"]){
+        SignActionButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        SignActionButton.frame = CGRectMake(leftButtonX+10, 30, btnWidth-20, 70);
+      
+        [SignActionButton setBackgroundImage: [UIImage imageNamed:@"Signature1.png"] forState:UIControlStateNormal];
+        [SignActionButton setTitleEdgeInsets:UIEdgeInsetsMake(75, 0, 0,0)];
+        [SignActionButton setTitle:NSLocalizedString(@"Menu.sign",@"Signature") forState:UIControlStateNormal];
+        SignActionButton.titleLabel.font=[UIFont fontWithName:@"Helvetica" size:13];
+        [SignActionButton setTitleColor:[UIColor whiteColor]forState:UIControlStateNormal];
+        [SignActionButton setTitleColor:[UIColor grayColor]forState:UIControlStateDisabled];
+        [SignActionButton addTarget:self action:@selector(SignAction:) forControlEvents:UIControlEventTouchUpInside];
+        [self addSubview:SignActionButton];
+        leftButtonX=leftButtonX+btnWidth;
+    }
     if(correspondence.actions.count>0 ){
         actionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
         actionsButton.frame = CGRectMake(leftButtonX, 30, btnWidth, 90);
@@ -590,30 +834,6 @@ BOOL lockSelected=NO;
     [lblTitle setText:[NSString stringWithFormat:@"LOCATION: %@   TITLE: %@",location,name]];
 }
 
-
-//- (void)doneButtonTapped:(UIButton *)button
-//{
-//	[delegate tappedInToolbar:self doneButton:button];
-//}
-//
-//- (void)thumbsButtonTapped:(UIButton *)button
-//{
-//	[delegate tappedInToolbar:self thumbsButton:button];
-//}
-//
-//- (void)printButtonTapped:(UIButton *)button
-//{
-//	[delegate tappedInToolbar:self printButton:button];
-//}
-//
-//- (void)emailButtonTapped:(UIButton *)button
-//{
-//	[delegate tappedInToolbar:self emailButton:button];
-//}
-//
-//- (void)markButtonTapped:(UIButton *)button
-//{
-//	[delegate tappedInToolbar:self markButton:button];
 //}
 
 @end

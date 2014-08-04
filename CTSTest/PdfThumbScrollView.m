@@ -97,8 +97,24 @@
 
 - (void)updateScrollViewContentSize
 {
+   AppDelegate* mainDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
-        count=correspondence.attachmentsList.count;
+    NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
+    
+    
+    if (correspondence.attachmentsList.count>0)
+    {
+        for(CAttachment* doc in correspondence.attachmentsList)
+        {
+            if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+                [thumbnailrarray addObject:doc];
+            }
+            
+            
+        }
+    }
+
+        count=thumbnailrarray.count;
     
 	//if (count > PAGING_VIEWS) count = PAGING_VIEWS; // Limit
     
@@ -151,9 +167,25 @@
 {
     CGRect viewRect=CGRectZero;
     positionX=5;
-  
+    AppDelegate* mainDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    
+    NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
+    
+    
+    if (correspondence.attachmentsList.count>0)
+    {
+        for(CAttachment* doc in correspondence.attachmentsList)
+        {
+            if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+                [thumbnailrarray addObject:doc];
+            }
+            
+            
+        }
+    }
+
 		NSInteger minValue; NSInteger maxValue;
-		NSInteger maxPage = correspondence.attachmentsList.count;
+		NSInteger maxPage = thumbnailrarray.count;
 		NSInteger minPage = 1;
         
 
@@ -192,7 +224,24 @@
                 imageView.userInteractionEnabled=YES;
          
                 [viewcontainer addGestureRecognizer:singleTapOne];
-                CAttachment *FILE=correspondence.attachmentsList[number];
+                AppDelegate* mainDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+                
+                NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
+                
+                
+                if (correspondence.attachmentsList.count>0)
+                {
+                    for(CAttachment* doc in correspondence.attachmentsList)
+                    {
+                        if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+                            [thumbnailrarray addObject:doc];
+                        }
+                        
+                        
+                    }
+                }
+
+                CAttachment *FILE=thumbnailrarray[number];
                 lblTitle.text=FILE.location;
                 NSData * data = [NSData dataWithBase64EncodedString:FILE.thumbnailBase64];
                

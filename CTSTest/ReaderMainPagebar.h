@@ -44,7 +44,9 @@
 
 @end
 
-@interface ReaderMainPagebar : UIView
+@interface ReaderMainPagebar : UIView{
+    NSMutableArray *thumbnailrarray;
+}
 
 @property (nonatomic, unsafe_unretained, readwrite) id <ReaderMainPagebarDelegate> delegate;
 @property (nonatomic,assign) NSInteger correspondenceId;

@@ -11,6 +11,7 @@
 @implementation CAttachment{
     NSMutableData *_responseData;
     NSString *tempPdfLocation;
+    AppDelegate *mainDelegate;
 }
 @synthesize tempPdfLocation;
 -(id) initWithTitle:(NSString*)title docId:(NSString*)did url:(NSString*)url  thumbnailBase64:(NSString*)thumbnailBase64 location:(NSString*)folderName{
@@ -26,24 +27,68 @@
     
 }
 
+-(id) initWithTitle:(NSString*)title docId:(NSString*)did url:(NSString*)url  thumbnailBase64:(NSString*)thumbnailBase64 location:(NSString*)folderName SiteId:(NSString*)SiteId WebId:(NSString*)WebId FileId:(NSString*)FileId AttachmentId:(NSString*)AttachmentId FileUrl:(NSString *)FileUrl ThubnailUrl:(NSString*)ThubnailUrl isOriginalMail:(NSString*)isOriginalMail FolderName:(NSString *)FolderName{
+    
+    
+    if ((self = [super init])) {
+        self.title=title;
+        self.docId=did;
+        self.url=url;
+        self.thumbnailBase64=thumbnailBase64;
+        self.location=folderName;
+        self.FileId = FileId;
+        self.AttachmentId=AttachmentId;
+        self.WebId = WebId;
+        self.FileUrl = FileUrl;
+        self.SiteId = SiteId;
+        self.ThubnailUrl = ThubnailUrl;
+        self.isOriginalMail=isOriginalMail;
+        self.FolderName = FolderName;
+    }
+    
+    
+    return self;
+}
 
 
 -(NSString *)saveInCacheinDirectory:(NSString*)dirName fromSharepoint:(BOOL)isSharePoint
 {
     
     @try {
+        mainDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         tempPdfLocation=@"";
        
         NSString*strUrl;
+        
         strUrl= [self.url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-//        NSArray *array=[[NSArray alloc] init];
-//        array = [strUrl componentsSeparatedByString:@"/"];
-//        NSArray *arrayfileName=[[array objectAtIndex:[array count]-1] componentsSeparatedByString:@"."];
-//        NSString* fileExtension=[[arrayfileName objectAtIndex:1] lowercaseString];
         
-        // if([fileExtension isEqualToString:@"pdf"]){
+        mainDelegate.docUrl = strUrl;
+        mainDelegate.SiteId = self.SiteId;
+        mainDelegate.FileId = self.FileId;
+        mainDelegate.FileUrl = self.FileUrl;
+        mainDelegate.AttachmentId = self.AttachmentId;
+
+        //strUrl = [strUrl stringByReplacingOccurrencesOfString:@"\\" withString:@"%5C"];
+
+        NSRange findit = [strUrl rangeOfString:@"%5C" options:NSBackwardsSearch];
+        if(findit.location!=NSNotFound){
+            NSLog(@"it is find");
+        }
+        else{
+            
+            NSRange lastComma = [strUrl rangeOfString:@"/" options:NSBackwardsSearch];
+            
+            if(lastComma.location != NSNotFound) {
+                strUrl = [strUrl stringByReplacingCharactersInRange:lastComma
+                                                         withString: @"%5C"];
+            }
+        }
+
+
+        
+        
         NSURL *url=[NSURL URLWithString:strUrl];
-        
+
         NSString *cachesDirectory = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
         
         NSString *path = [cachesDirectory stringByAppendingPathComponent:dirName];
@@ -67,12 +112,15 @@
          if(!fileExists){
         if(isSharePoint==YES)
         {
-            NSMutableURLRequest *theRequest = [[NSMutableURLRequest alloc]initWithURL:url];
-            NSLog(@"%@",url);
-            NSLog(@"%@",tempPdfLocation);
-            NSURLConnection *connect = [[NSURLConnection alloc]initWithRequest:theRequest delegate:self];
-            
-            
+          //  NSMutableURLRequest *theRequest = [[NSMutableURLRequest alloc]initWithURL:url];
+           // NSLog(@"%@",url);
+         //  NSLog(@"%@",tempPdfLocation);
+         // NSURLConnection *connect = [[NSURLConnection alloc]initWithRequest:theRequest delegate:self];
+           //jen sharepoint connection
+            NSData *data = [NSData dataWithContentsOfURL:url ];
+            if(data.length!=0)
+                [data writeToFile:tempPdfLocation atomically:TRUE];
+            else tempPdfLocation=@"";
         }
         else
         {

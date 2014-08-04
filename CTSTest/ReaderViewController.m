@@ -35,6 +35,10 @@
 #import "GDataXMLNode.h"
 #import "CSearch.h"
 #import "ManageSignatureViewController.h"
+#import "HomeViewController.h"
+#import "NewActionTableViewController.h"
+#import "AcceptWithCommentViewController.h"
+#import "CAction.h"
 //#import "SVProgressHUD.h"
 
 @interface ReaderViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, MFMailComposeViewControllerDelegate,
@@ -89,6 +93,9 @@
     BOOL isNoteVisible;
     BOOL isMetadataVisible;
     UIView *metadataContainer;
+    
+    NSMutableArray *folderNamesArray;
+
 }
 
 #pragma mark Constants
@@ -96,7 +103,7 @@
 #define PAGING_VIEWS 3
 
 #define TOOLBAR_HEIGHT 115.0f
-#define PAGEBAR_HEIGHT 100.0f
+#define PAGEBAR_HEIGHT 220.0f
 
 #define TAP_AREA_SIZE 48.0f
 
@@ -106,7 +113,7 @@
 
 #pragma mark Properties
 
-@synthesize delegate,keyword,selections;
+@synthesize delegate,keyword,selections,openButton,numberPages,folderPagebar;
 
 #pragma mark Support methods
 
@@ -326,7 +333,38 @@
     }else{
         correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
     }
-    CAttachment *fileToOpen=correspondence.attachmentsList[self.attachmentId];
+       NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
+        
+        
+        if (correspondence.attachmentsList.count>0)
+        {
+            for(CAttachment* doc in correspondence.attachmentsList)
+            {
+                if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+                    [thumbnailrarray addObject:doc];
+                }
+                
+                
+            }
+        }
+        //jis next
+        
+        CAttachment *fileToOpen;
+        
+        if([mainDelegate.attachmentType isEqualToString:@"nextprevioustype"]){
+            fileToOpen=correspondence.attachmentsList[self.attachmentId];
+        }
+        else{
+            fileToOpen=thumbnailrarray[self.attachmentId];
+        }
+        
+    
+        mainDelegate.attachmentType =@"";
+        
+        //CAttachment *fileToOpen;
+
+    
+        
     [mainToolbar updateTitleWithLocation:fileToOpen.location withName:fileToOpen.title];
       NSString *tempPdfLocation=[fileToOpen saveInCacheinDirectory:correspondence.Id fromSharepoint:mainDelegate.isSharepoint];
     //NSString *tempPdfLocation=[CParser loadPdfFile:fileToOpen.url inDirectory:correspondence.Id];
@@ -352,14 +390,39 @@
             UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
             if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown) {
                 factor=1;
+                            m_pdfview = [[PDFView alloc]initWithFrame:CGRectMake((self.view.bounds.size.width-self.view.bounds.size.width/factor)/2, 5, self.view.bounds.size.width/factor, self.view.bounds.size.height-5)];
+                //jis orientation
+                if(isMetadataVisible){
+                    [metadataContainer removeFromSuperview];
+                    [self.view addSubview:metadataContainer];
+                    m_pdfview.frame=CGRectMake (325, 0, self.view.bounds.size.width/1.75, self.view.bounds.size.height-5);
+                    metadataContainer.frame=CGRectMake(0, 0, 320, 1019);
+                    numberPages.frame = CGRectMake(360, 950, 80, 40);
+                    openButton.frame = CGRectMake(120, 0, 200, 30);
+                }
+                //endjis orientation
             } else {
                 factor=1.75;
+                    m_pdfview = [[PDFView alloc]initWithFrame:CGRectMake((self.view.bounds.size.width-self.view.bounds.size.width/factor)/2, 5, self.view.bounds.size.width/factor, self.view.bounds.size.height-5)];
+                if(isMetadataVisible){
+                    m_pdfview.frame=CGRectMake(320+(self.view.bounds.size.width-(320+m_pdfview.frame.size.width))/2, 0, m_pdfview.frame.size.width, m_pdfview.frame.size.height);
+                }
             }
 
-            m_pdfview = [[PDFView alloc]initWithFrame:CGRectMake((self.view.bounds.size.width-self.view.bounds.size.width/factor)/2, 5, self.view.bounds.size.width/factor, self.view.bounds.size.height-5)];
+            
+            
+
+            
+
             [m_pdfdoc setPDFView:m_pdfview];
             [m_pdfview initPDFDoc:m_pdfdoc];
             [self.view addSubview:m_pdfview];
+            
+            [m_pdfview addSubview:openButton];
+         [m_pdfview addSubview:numberPages];
+            
+            [m_pdfview addSubview:folderPagebar];
+            
         }
         else{
 	[m_pdfdoc setPDFView:m_pdfview];
@@ -368,10 +431,11 @@
 //
 //	//Add pdf view to viewcontroller.
        
-        
-	
+        [self.view bringSubviewToFront:numberPages];
+        [self.view bringSubviewToFront:openButton];
     [self.view bringSubviewToFront:mainToolbar];
     [self.view bringSubviewToFront:mainPagebar];
+        [self.view bringSubviewToFront:folderPagebar];
     [self updateScrollViewContentSize];
     }
     }
@@ -410,9 +474,160 @@
 	return reader;
 }
 
+-(void) openToolbar{
+    [self.view bringSubviewToFront:mainToolbar];
+    [mainToolbar showToolbar];
+}
+
+-(void)openPagebar:(id)sender{
+    
+
+    NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
+    [SVProgressHUD showWithStatus:NSLocalizedString(@"Alert.Loading",@"Loading ...") maskType:SVProgressHUDMaskTypeBlack];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+    mainDelegate.FolderName =folderarray[[sender tag]];
+    
+    CCorrespondence *correspondence;
+    correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
+    
+    
+    if(![mainDelegate.folderNames containsObject:mainDelegate.FolderName]){
+        
+        [folderNamesArray addObject:mainDelegate.FolderName];
+        [mainDelegate.folderNames addObject:mainDelegate.FolderName];
+        NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
+        
+        int docId = [correspondence.Id intValue];
+        
+        NSString* attachmentUrl = [NSString stringWithFormat:@"http://%@?action=GetFolderAttachments&token=%@&docId=%d&folderName=%@",serverUrl,mainDelegate.user.token,docId,mainDelegate.FolderName];
+        
+        NSString* urlTextEscaped = [attachmentUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        
+        NSURL *xmlUrl = [NSURL URLWithString:urlTextEscaped];
+        NSData *attachmentXmlData = [[NSMutableData alloc] initWithContentsOfURL:xmlUrl];
+        
+        
+        
+        
+        NSError *error;
+        GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:attachmentXmlData
+                                                               options:0 error:&error];
+
+        NSArray *Attachments = [doc nodesForXPath:@"//Attachments" error:nil];
+        
+        GDataXMLElement *AttachmentsXML;
+        if (Attachments.count > 0) {
+            AttachmentsXML =  [Attachments objectAtIndex:0];
+        }
+        
+        NSArray *attachmentXML = [AttachmentsXML elementsForName:@"Attachment"];
+        
+        NSString *urlattach;
+        NSString *idattach;
+        NSString *thumbnailurlattach;
+        
+        for(GDataXMLElement *attachment in attachmentXML)
+        {
+            NSArray *ids = [attachment elementsForName:@"AttachmentId"];
+            if (ids.count > 0) {
+                GDataXMLElement *idEl = (GDataXMLElement *) [ids objectAtIndex:0];
+                idattach = idEl.stringValue;
+            }
+            
+            NSArray *urls = [attachment elementsForName:@"url"];
+            if (urls.count > 0) {
+                GDataXMLElement *urlEl = (GDataXMLElement *) [urls objectAtIndex:0];
+                urlattach = urlEl.stringValue;
+            }
+            
+            NSArray *thumbnailurls = [attachment elementsForName:@"ThumbnailUrl"];
+            if (thumbnailurls.count > 0) {
+                GDataXMLElement *thumbnailurlEl = (GDataXMLElement *) [thumbnailurls objectAtIndex:0];
+                thumbnailurlattach = thumbnailurlEl.stringValue;
+            }
+            
+            for(CAttachment* doc in correspondence.attachmentsList)
+            {
+                if([doc.AttachmentId isEqualToString: idattach]){
+                    doc.ThubnailUrl = thumbnailurlattach;
+                    doc.url = urlattach;
+                }
+            }
+        }
+    }
+
+    
+
+    
+        dispatch_async(dispatch_get_main_queue(), ^{
+
+    CGSize size = [UIScreen mainScreen].bounds.size;
+    size = CGSizeMake(size.height, size.width);
+    CGRect viewRect = CGRectMake( 0,0,size.width, self.view.bounds.size.height);
+    
+    //CGRect viewRect = CGRectMake( m_pdfview.bounds.origin.x+218,0,size.width, self.view.bounds.size.height);
+
+    CGRect pagebarRect = viewRect;
+    
+    pagebarRect.size.height = PAGEBAR_HEIGHT;
+    pagebarRect.origin.y = (viewRect.size.height - PAGEBAR_HEIGHT);
+    
+    mainPagebar = [[ReaderMainPagebar alloc] initWithFrame:pagebarRect Document:document CorrespondenceId:self.correspondenceId MenuId:self.menuId AttachmentId:self.attachmentId]; // At bottom
+    
+
+    
+    //jis folderpagebar
+    UIButton *gobackFolder=[[UIButton alloc]initWithFrame:CGRectMake(2, -20, 50, 50)];
+    [gobackFolder setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"GoBack.png"]]forState:UIControlStateNormal];
+    [gobackFolder addTarget:self action:@selector(closePagebar) forControlEvents:UIControlEventTouchUpInside];
+    [mainPagebar addSubview:gobackFolder];
+    [mainPagebar bringSubviewToFront:gobackFolder];
+    
+    mainPagebar.delegate = self;
+//    CGRect shadowRect = mainPagebar.bounds; shadowRect.size.height = 10.0f; shadowRect.origin.y -= shadowRect.size.height;
+//    
+//    ReaderPagebarShadow *shadowView = [[ReaderPagebarShadow alloc] initWithFrame:shadowRect];
+//    
+//    [mainPagebar addSubview:shadowView];
+            [self.view addSubview:mainPagebar];
+            mainPagebar.hidden=false;
+            
+            // [mainPagebar showPagebar];
+            folderPagebar.hidden=true;
+                       [SVProgressHUD dismiss];
+                       });
+    });
+    
+}
+
+-(void)closePagebar{
+    self.attachmentId=0;
+    [mainPagebar removeFromSuperview];
+     mainPagebar.hidden=true;
+   // [m_pdfview removeFromSuperview];
+
+    mainPagebar=nil;
+    //[mainPagebar hidePagebar];
+    folderPagebar.hidden = false;
+}
+
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
+     mainDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    folderNamesArray = [[NSMutableArray alloc]init];
+    mainDelegate.folderNames = [[NSMutableArray alloc]init];
+    openButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  
+    openButton.frame = CGRectMake(100, 0, 200, 30);
+    [openButton setTitle:[NSString stringWithFormat:@"Click to see the Menu"] forState:UIControlStateNormal];
+    [openButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    openButton.titleLabel.font = [UIFont systemFontOfSize:12];
+    [openButton setTintColor:[UIColor whiteColor]];
+    [openButton setBackgroundImage:[UIImage imageNamed:@"clickformenu.jpg"] forState:UIControlStateNormal];
+    [openButton addTarget:self action:@selector(openToolbar) forControlEvents:UIControlEventTouchUpInside];
+   // [self.view addSubview:openButton];
+    
 
 	assert(document != nil); // Must have a valid ReaderDocument
 
@@ -443,20 +658,123 @@
 	mainToolbar = [[ReaderMainToolbar alloc] initWithFrame:toolbarRect document:document CorrespondenceId:self.correspondenceId MenuId:self.menuId AttachmentId:self.attachmentId]; // At top
 	mainToolbar.delegate = self;
 
+  
+    
+    
 	[self.view addSubview:mainToolbar];
     
     [mainToolbar hideToolbar];
-	CGRect pagebarRect = viewRect;
-	pagebarRect.size.height = PAGEBAR_HEIGHT;
-	pagebarRect.origin.y = (viewRect.size.height - PAGEBAR_HEIGHT);
-
-	mainPagebar = [[ReaderMainPagebar alloc] initWithFrame:pagebarRect Document:document CorrespondenceId:self.correspondenceId MenuId:self.menuId AttachmentId:self.attachmentId]; // At bottom
-
-	mainPagebar.delegate = self;
-
-	[self.view addSubview:mainPagebar];
     
-    [mainPagebar hidePagebar];
+    folderPagebar = [[UIView alloc]init];
+    
+    
+    
+    folderPagebar.frame = CGRectMake(0, 2*PAGEBAR_HEIGHT+104,585.8, PAGEBAR_HEIGHT);
+    
+    
+    folderPagebar.autoresizesSubviews = YES;
+    folderPagebar.userInteractionEnabled = YES;
+    folderPagebar.contentMode = UIViewContentModeRedraw;
+    folderPagebar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+    folderPagebar.backgroundColor = [UIColor colorWithRed:3/255.0f green:3/255.0f  blue:3/255.0f  alpha:0.8];
+    
+    
+    UIScrollView* scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, folderPagebar.bounds.size.width, folderPagebar.bounds.size.height)];
+    scrollView.backgroundColor = [UIColor clearColor];
+    scrollView.scrollEnabled = YES;
+    scrollView.pagingEnabled = YES;
+    scrollView.showsVerticalScrollIndicator = YES;
+    scrollView.showsHorizontalScrollIndicator = YES;
+    
+
+    mainDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    
+    folderarray = [[NSMutableArray alloc] init];
+    
+    for(CMenu* inbox in mainDelegate.user.menu)
+    {
+        if (inbox.correspondenceList.count>0)
+        {
+            for(CCorrespondence* correspondence in inbox.correspondenceList)
+            {
+                if (correspondence.attachmentsList.count>0)
+                {
+                    for(CAttachment* doc in correspondence.attachmentsList)
+                    {
+                        if(![folderarray containsObject:doc.FolderName]){
+                            
+                            [folderarray addObject:doc.FolderName];
+                            
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    scrollView.contentSize = CGSizeMake(folderPagebar.bounds.size.width * 3, folderPagebar.bounds.size.height);
+
+    for( i=0 ;i<folderarray.count;i++){
+        UIButton *btnFolder;
+        UILabel* folderlabel;
+        
+        if(i%4==0){
+            btnFolder=[[UIButton alloc]initWithFrame:CGRectMake(26+26+(140*i), 30, 100, 130)];
+            
+            folderlabel=[[UILabel alloc]initWithFrame:CGRectMake(26+26+(140*i), 100, 100, 100)];
+        }
+        else{
+            btnFolder=[[UIButton alloc]initWithFrame:CGRectMake(26+(140*i), 30, 100, 130)];
+            
+            folderlabel=[[UILabel alloc]initWithFrame:CGRectMake(26+(140*i), 100, 100, 100)];
+        }
+        
+     
+
+        [btnFolder setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"Folder.png"]]forState:UIControlStateNormal];
+        
+        folderlabel.text=[folderarray objectAtIndex:i];
+        
+        folderlabel.lineBreakMode = NSLineBreakByWordWrapping;
+        folderlabel.numberOfLines = 2;
+        
+        folderlabel.textAlignment=NSTextAlignmentCenter;
+        folderlabel.backgroundColor = [UIColor clearColor];
+        folderlabel.font = [UIFont fontWithName:@"Helvetica" size:17];
+        folderlabel.textColor=[UIColor whiteColor];
+        //  [btnFolder setTitle:[folderarray objectAtIndex:i] forState:UIControlStateNormal];
+        btnFolder.tag =i;
+        [btnFolder addTarget:self action:@selector(openPagebar:) forControlEvents:UIControlEventTouchUpInside];
+        [scrollView addSubview:btnFolder];
+        [scrollView addSubview:folderlabel];
+        
+    }
+    [folderPagebar addSubview:scrollView];
+    
+
+//    UIButton *btnFolder=[[UIButton alloc]initWithFrame:CGRectMake(folderPagebar.frame.size.width/2-50, 0, 70, 70)];
+//    [btnFolder setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"Folder.png"]]forState:UIControlStateNormal];
+//    [btnFolder addTarget:self action:@selector(openPagebar) forControlEvents:UIControlEventTouchUpInside];
+//    [folderPagebar addSubview:btnFolder];
+    folderPagebar.hidden=true;
+    
+    CGRect shadowRect = folderPagebar.bounds; shadowRect.size.height = 10.0f; shadowRect.origin.y -= shadowRect.size.height;
+    
+    ReaderPagebarShadow *shadowView = [[ReaderPagebarShadow alloc] initWithFrame:shadowRect];
+    
+    [folderPagebar addSubview:shadowView];
+    
+//end jis folderpagebar
+    
+
+//mounir note
+//    
+//	mainPagebar.delegate = self;
+//
+//	[self.view addSubview:mainPagebar];
+//    
+//    [mainPagebar hidePagebar];
 
 	UILongPressGestureRecognizer *singleTapOne = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
 	//singleTapOne.numberOfTouchesRequired = 1;
@@ -498,8 +816,54 @@
   
 
 	contentViews = [NSMutableDictionary new]; lastHideTime = [NSDate date];
+    
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+   
+    
+    
+    
+    
+    numberPages = [UIButton buttonWithType:UIButtonTypeCustom];
+    
+
+    
+    numberPages.frame = CGRectMake(self.view.frame.size.width-263, 720, 80, 30);
+    currentPage++;
+    [numberPages setTitle:[NSString stringWithFormat:@"%d of %@",currentPage,document.pageCount] forState:UIControlStateNormal];
+    
+    [numberPages setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    numberPages.titleLabel.font = [UIFont systemFontOfSize:12];
+    [numberPages setTintColor:[UIColor whiteColor]];
+    numberPages.backgroundColor = [UIColor blackColor];
+    
+    
+    CCorrespondence *correspondence;
+    if(self.menuId!=100){
+        correspondence= ((CMenu*)mainDelegate.user.menu[self.menuId]).correspondenceList[self.correspondenceId];
+    }else{
+        correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
+    }
+
+    mainDelegate.inboxId = correspondence.inboxId;
+
+ [self adjustButtons:orientation];
 }
 
+
+
+
+-(void)adjustButtons:(UIInterfaceOrientation)orientation{
+    if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown) {
+            openButton.frame = CGRectMake(300, 0, 200, 30);
+        numberPages.frame = CGRectMake(687.8, 950, 80, 40);
+    } else {
+          openButton.frame = CGRectMake(180, 0, 200, 30);
+        numberPages.frame = CGRectMake(self.view.frame.size.width-263, 720, 80, 30);
+    }
+    
+
+
+}
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -589,7 +953,7 @@
 //        CGRect searchViewRect = CGRectMake((self.view.bounds.size.width-450)/2, 0, 450, self.view.bounds.size.height);
 //        self.searchTable.view.frame=searchViewRect;
 //         }
-//   
+//   s
     
 //    CGRect noteViewRect = CGRectMake((self.view.bounds.size.width-500)/2, 0, 500, self.view.bounds.size.height);
 //    self.noteTable.view.frame=noteViewRect;
@@ -597,11 +961,36 @@
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown) {
         factor=1;
+        m_pdfview.frame=CGRectMake ((self.view.bounds.size.width-self.view.bounds.size.width/factor)/2, 5, self.view.bounds.size.width/factor, self.view.bounds.size.height-5);
+        numberPages.frame = CGRectMake(687.8, 950, 80, 40);
+        openButton.frame = CGRectMake(300, 0, 200, 30);
+        
+        //jis orientation
+        if(isMetadataVisible){
+            [metadataContainer removeFromSuperview];
+              [self.view addSubview:metadataContainer];
+               m_pdfview.frame=CGRectMake (325, 0, self.view.bounds.size.width/1.75, self.view.bounds.size.height-5);
+            metadataContainer.frame=CGRectMake(0, 0, 320, 1019);
+            numberPages.frame = CGRectMake(360, 950, 80, 40);
+            openButton.frame = CGRectMake(120, 0, 200, 30);
+        }
+        //endjis orientation
+
     } else {
         factor=1.75;
+           m_pdfview.frame=CGRectMake ((self.view.bounds.size.width-self.view.bounds.size.width/factor)/2, 5, self.view.bounds.size.width/factor, self.view.bounds.size.height-5);
+        numberPages.frame = CGRectMake(self.view.frame.size.width-263, 720, 80, 30);
+        openButton.frame = CGRectMake(180, 0, 200, 30);
+        
+        //jis orientation
+        if(isMetadataVisible){
+            m_pdfview.frame=CGRectMake(320+(self.view.bounds.size.width-(320+m_pdfview.frame.size.width))/2, 0, m_pdfview.frame.size.width, m_pdfview.frame.size.height);
+        }
+        //endjis orientation
+
     }
     
-    m_pdfview.frame=CGRectMake ((self.view.bounds.size.width-self.view.bounds.size.width/factor)/2, 5, self.view.bounds.size.width/factor, self.view.bounds.size.height-5);
+    
     
 	if (isVisible == NO) return; // iOS present modal bodge
 
@@ -613,7 +1002,6 @@
     
 }
 
-
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
 	//if (isVisible == NO) return; // iOS present modal bodge
@@ -621,7 +1009,6 @@
 	//if (fromInterfaceOrientation == self.interfaceOrientation) return;
   
 }
-
 
 - (void)didReceiveMemoryWarning
 {
@@ -650,7 +1037,11 @@
    
     if(mainToolbar.hidden==NO || mainPagebar.hidden==NO){
         [mainToolbar hideToolbar];
-        [mainPagebar hidePagebar];
+      //  [mainPagebar hidePagebar];
+        if( mainPagebar.hidden==false){
+            [mainPagebar removeFromSuperview];
+            mainPagebar.hidden=true;
+        }
     }
    
     
@@ -671,7 +1062,7 @@
         location.x += 220.0;
         NSLog(@"Swip Right");
         
-        if ((maxPage > minPage) && (currentPage >= minPage))
+        if ((maxPage > minPage) && (currentPage > minPage))
         {
             [self TurnPageLeft];
         }
@@ -717,9 +1108,6 @@
 
 }
 
-
-
-
 -(void)TurnPageLeft{
     CATransition *transition = [CATransition animation];
     [transition setDelegate:self];
@@ -732,6 +1120,7 @@
     
   //  [self showDocumentPage:currentPage-1];
     currentPage--;
+    [numberPages setTitle:[NSString stringWithFormat:@"%d of %@",currentPage,document.pageCount] forState:UIControlStateNormal];
     [ m_pdfview OnPrevPage];
     
 }
@@ -746,19 +1135,22 @@
         [m_pdfview.layer addAnimation:transition forKey:@"CurlAnim"];
    
     currentPage++;
+    [numberPages setTitle:[NSString stringWithFormat:@"%d of %@",currentPage,document.pageCount] forState:UIControlStateNormal];
    // [self showDocumentPage:currentPage+1];
      [ m_pdfview OnNextPage];
 }
 
 -(void)ChangeFileOnSwipe:(NSInteger)newAttachId{
     
-    @try{
-    
-
+    @try
+    {
     CCorrespondence *correspondence;
-    if(self.menuId!=100){
+    if(self.menuId!=100)
+    {
         correspondence= ((CMenu*)mainDelegate.user.menu[self.menuId]).correspondenceList[self.correspondenceId];
-    }else{
+    }
+    else
+    {
         correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
     }
     
@@ -769,7 +1161,23 @@
         // self.attachmentId-=1;
     }
     else{
-       CAttachment *fileToOpen=correspondence.attachmentsList[newAttachId];
+        NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
+        
+        
+        if (correspondence.attachmentsList.count>0)
+        {
+            for(CAttachment* doc in correspondence.attachmentsList)
+            {
+                if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+                    [thumbnailrarray addObject:doc];
+                }
+                
+                
+            }
+        }
+        
+
+       CAttachment *fileToOpen=thumbnailrarray[newAttachId];
         self.attachmentId=newAttachId;
      NSString *tempPdfLocation=[fileToOpen saveInCacheinDirectory:correspondence.Id fromSharepoint:mainDelegate.isSharepoint];
        // NSString *tempPdfLocation=[CParser loadPdfFile:fileToOpen.url inDirectory:correspondence.Id];
@@ -815,7 +1223,6 @@
 
 }
 
-
 -(ReaderDocument*) OpenPdfReader:(NSString *) pdfPath{
     NSString *phrase = nil; // Document password (for unlocking most encrypted PDF files)
     
@@ -826,10 +1233,6 @@
     
     return newDocument;
 }
-
-
-
-
 
 #pragma mark UIScrollViewDelegate methods
 
@@ -946,7 +1349,11 @@
                         [self.view bringSubviewToFront:mainToolbar];
 					}else{
                         [mainToolbar hideToolbar];
-                        [mainPagebar hidePagebar];
+                       // [mainPagebar hidePagebar];
+                        if( mainPagebar.hidden==false){
+                            [mainPagebar removeFromSuperview];
+                            mainPagebar.hidden=true;
+                        }
                     }
 				}
 		
@@ -998,8 +1405,6 @@
         }
     }
 }
-
-
 
 - (void)handleDoubleTap:(UITapGestureRecognizer *)recognizer
 {
@@ -1057,12 +1462,15 @@
 		}
 	}
 }
-
--(void)loadNewDocumentReader:(ReaderDocument *)newdocument documentId:(NSInteger)documentId{
+//jen PreviousNext
+//-(void)loadNewDocumentReader:(ReaderDocument *)newdocument documentId:(NSInteger)documentId{
+-(void)loadNewDocumentReader:(ReaderDocument *)newdocument attachementId:(NSInteger)attachementId{
     @try{
     [self.noteContainer removeFromSuperview];
-    self.correspondenceId=documentId;
-    self.attachmentId=0;
+        //jen PreviousNext
+   // self.correspondenceId=documentId;
+    //self.attachmentId=1;
+    self.attachmentId=attachementId;
     document=newdocument;
     contentViews = [NSMutableDictionary new];
     currentPage=0;
@@ -1073,7 +1481,10 @@
 //            [view removeFromSuperview];
 //    }
     [m_pdfview removeFromSuperview];
-    [mainPagebar removeFromSuperview];
+        if( mainPagebar.hidden==false){
+            [mainPagebar removeFromSuperview];
+            mainPagebar.hidden=true;
+        }
     
     
     [self performSelectorInBackground:@selector(updatePagebarByCorrespondence) withObject:nil];
@@ -1093,15 +1504,15 @@
 }
 
 -(void)updatePagebarByCorrespondence{
-    CGRect viewRect = self.view.bounds;
-    CGRect pagebarRect = viewRect;
-	pagebarRect.size.height = PAGEBAR_HEIGHT;
-	pagebarRect.origin.y = (viewRect.size.height - PAGEBAR_HEIGHT);
-    mainPagebar = [[ReaderMainPagebar alloc] initWithFrame:pagebarRect  Document:document CorrespondenceId:self.correspondenceId MenuId:self.menuId AttachmentId:self.attachmentId]; // At bottom
-    mainPagebar.delegate = self;
+//    CGRect viewRect = self.view.bounds;
+//    CGRect pagebarRect = viewRect;
+//	pagebarRect.size.height = PAGEBAR_HEIGHT;
+//	pagebarRect.origin.y = (viewRect.size.height - PAGEBAR_HEIGHT);
+//    mainPagebar = [[ReaderMainPagebar alloc] initWithFrame:pagebarRect  Document:document CorrespondenceId:self.correspondenceId MenuId:self.menuId AttachmentId:self.attachmentId]; // At bottom
+//    mainPagebar.delegate = self;
     
 	[self.view addSubview:mainPagebar];
-    [mainPagebar hidePagebar];
+   // [mainPagebar hidePagebar];
 }
 
 #pragma mark ReaderContentViewDelegate methods
@@ -1121,13 +1532,117 @@
 			if (CGRectContainsPoint(areaRect, point) == false) return;
 		}
 
-		[mainToolbar hideToolbar]; [mainPagebar hidePagebar]; // Hide
+		[mainToolbar hideToolbar];
+        //[mainPagebar hidePagebar]; // Hide
+        if( mainPagebar.hidden==false){
+        [mainPagebar removeFromSuperview];
+            mainPagebar.hidden=true;
+        }
 [self.noteContainer removeFromSuperview];
 		lastHideTime = [NSDate date];
 	}
 }
 
 #pragma mark ReaderMainToolbarDelegate methods
+-(void)AcceptReject:(NSString*)note viewController:(AcceptWithCommentViewController *)viewcontroller action:(CAction *)action{
+    @try{
+        
+        CCorrespondence *correspondence;
+        if(self.menuId!=100){
+            correspondence= ((CMenu*)mainDelegate.user.menu[self.menuId]).correspondenceList[self.correspondenceId];
+        }else{
+            correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
+        }
+        
+        
+        NSString* params = [NSString stringWithFormat:@"action=%@&correspondenceId=%@&token=%@&transferId=%@&note=%@&inboxId=%@",action.action,correspondence.Id,mainDelegate.user.token,correspondence.TransferId,note,correspondence.inboxId];
+        
+        NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
+        NSString* url = [NSString stringWithFormat:@"http://%@?%@",serverUrl,params];
+         NSString* urlTextEscaped = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSURL *xmlUrl = [NSURL URLWithString:urlTextEscaped];
+        NSData *xmlData = [[NSMutableData alloc] initWithContentsOfURL:xmlUrl];
+        NSString *validationResultAction=[CParser ValidateWithData:xmlData];
+        
+        if(![validationResultAction isEqualToString:@"OK"])
+        {
+            if([validationResultAction isEqualToString:@"Cannot access to the server"])
+            {
+                CFPendingAction*pa = [[CFPendingAction alloc] initWithActionUrl:url];
+                [mainDelegate.user addPendingAction:pa];
+            }else
+                
+                [self ShowMessage:validationResultAction];
+            
+        }else {
+            
+
+          
+           NSString* correspondenceUrl = [NSString stringWithFormat:@"http://%@?action=GetCorrespondences&token=%@&inboxIds=%d",serverUrl,mainDelegate.user.token,[correspondence.inboxId intValue]];
+            NSURL *xmlUrl = [NSURL URLWithString:correspondenceUrl];
+            NSData *menuXmlData = [[NSMutableData alloc] initWithContentsOfURL:xmlUrl];
+            NSMutableDictionary *correspondences=[CParser loadCorrespondencesWithData:menuXmlData];
+          
+            ((CMenu*)mainDelegate.user.menu[mainDelegate.inboxForArchiveSelected]).correspondenceList=[correspondences objectForKey:[NSString stringWithFormat:@"%d",[correspondence.inboxId intValue]]];
+          
+            mainDelegate.searchModule.correspondenceList = [correspondences objectForKey:[NSString stringWithFormat:@"%d",[correspondence.inboxId intValue]]];
+           
+            [self ShowMessage:[NSString stringWithFormat:@"Action %@ successfuly done.",action.action]];
+            
+            
+            
+            
+            
+        }
+    }
+    @catch (NSException *ex) {
+        [FileManager appendToLogView:@"ActionsTableViewController" function:@"executeAction" ExceptionTitle:[ex name] exceptionReason:[ex reason]];
+    }
+}
+
+-(void)SignAndSendIt:(NSString*)action document:(ReaderDocument *)document note:(NSString *)note{
+    
+    CCorrespondence *correspondence;
+    if(self.menuId!=100){
+        correspondence= ((CMenu*)mainDelegate.user.menu[self.menuId]).correspondenceList[self.correspondenceId];
+    }else{
+        correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
+    }
+    
+    
+    NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
+    
+
+    
+    
+    NSString* searchUrl = [NSString stringWithFormat:@"http://%@?action=SignAndSend&token=%d&correspondenceId=%d&transferId=%d&inboxId=%@&loginName=%@&pdfFilePath=%@&pageNumber=%d&SiteId=%@&FileId=%@&FileUrl=%@&note=%@",serverUrl,mainDelegate.user.token.intValue,mainDelegate.corresponenceId.intValue,mainDelegate.transferId.intValue,correspondence.inboxId,mainDelegate.user.loginName,mainDelegate.docUrl,document.pageCount.intValue,mainDelegate.SiteId,mainDelegate.FileId,mainDelegate.FileUrl,note];
+    
+          NSString* strUrl = [searchUrl stringByReplacingOccurrencesOfString:@"%5C" withString:@"\\"];
+    
+    NSString* urlTextEscaped = [strUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    NSURL *xmlUrl = [NSURL URLWithString:urlTextEscaped];
+    NSData *XmlData = [[NSMutableData alloc] initWithContentsOfURL:xmlUrl];
+    
+    NSString *validationResultAction=[CParser ValidateWithData:XmlData];
+    
+    if(![validationResultAction isEqualToString:@"OK"])
+    {
+        if([validationResultAction isEqualToString:@"Cannot access to the server"])
+        {
+            CFPendingAction*pa = [[CFPendingAction alloc] initWithActionUrl:searchUrl];
+            [mainDelegate.user addPendingAction:pa];
+        }else
+            
+            [self ShowMessage:validationResultAction];
+        
+    }else {
+        
+        [self ShowMessage:@"Action successfuly done."];
+        
+    }
+    
+}
 
 -(void)destinationSelected:(CDestination*)dest withRouteLabel:(CRouteLabel*)routeLabel routeNote:(NSString*)note withDueDate:(NSString*)date viewController:(TransferViewController *)viewcontroller
 {
@@ -1143,7 +1658,7 @@
     }
      // CAttachment *currentDoc=correspondence.attachmentsList[self.attachmentId];
     
-	NSString* url = [NSString stringWithFormat:@"action=TransferCorrespondence&token=%@&correspondenceId=%@&destinationId=%@&purposeId=%@&dueDate=%@&note=%@",userTemp.token,correspondence.Id,dest.rid,routeLabel.labelId,date,note];
+	NSString* url = [NSString stringWithFormat:@"action=TransferCorrespondence&token=%@&correspondenceId=%@&destinationId=%@&purposeId=%@&dueDate=%@&note=%@",userTemp.token,correspondence.TransferId,dest.rid,routeLabel.labelId,date,note];
 	CFPendingAction*pa = [[CFPendingAction alloc] initWithActionUrl:url];
 	
 	
@@ -1151,6 +1666,23 @@
     if([self uploadXml:correspondence.Id]){
       if(self.menuId !=100)
         [((CMenu*)mainDelegate.user.menu[self.menuId]).correspondenceList removeObjectAtIndex:self.correspondenceId];
+        
+              NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
+        NSString* correspondenceUrl = [NSString stringWithFormat:@"http://%@?action=GetCorrespondences&token=%@&inboxIds=%d",serverUrl,mainDelegate.user.token,[correspondence.inboxId intValue]];
+        NSURL *xmlUrl = [NSURL URLWithString:correspondenceUrl];
+        NSData *menuXmlData = [[NSMutableData alloc] initWithContentsOfURL:xmlUrl];
+        
+        NSMutableDictionary *correspondences=[CParser loadCorrespondencesWithData:menuXmlData];
+        
+       // ((CMenu*)mainDelegate.user.menu[mainDelegate.inboxForArchiveSelected]).correspondenceList=[correspondences objectForKey:[NSString stringWithFormat:@"%d",nb]];
+        
+        mainDelegate.searchModule.correspondenceList = [correspondences objectForKey:[NSString stringWithFormat:@"%d",[correspondence.inboxId intValue]]];
+        
+        
+        [self ShowMessage:@"Transfer succesfully done"];
+        
+        
+        
     if ([delegate respondsToSelector:@selector(dismissReaderViewController:)] == YES)
 	{
         
@@ -1169,6 +1701,7 @@
    
    
 }
+
 
 -(BOOL)uploadXml:(NSString*) docId{
     	
@@ -1242,7 +1775,22 @@
             }else{
                 correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
             }
-            CAttachment *attachment=correspondence.attachmentsList[self.attachmentId];
+            NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
+            
+            
+            if (correspondence.attachmentsList.count>0)
+            {
+                for(CAttachment* doc in correspondence.attachmentsList)
+                {
+                    if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+                        [thumbnailrarray addObject:doc];
+                    }
+                    
+                    
+                }
+            }
+
+            CAttachment *attachment=thumbnailrarray[self.attachmentId];
             
             NSData* annotData= [NSData dataWithContentsOfFile:attachment.tempPdfLocation];
             [Base64 initialize];
@@ -1322,6 +1870,18 @@
     
 	}
 }
+- (void)dismiss {
+	[SVProgressHUD dismiss];
+}
+
+- (void)increaseProgress{
+    [SVProgressHUD showWithStatus:NSLocalizedString(@"Alert.Signing",@"Signing ...") maskType:SVProgressHUDMaskTypeBlack];
+    NSTimer* myTimer = [NSTimer scheduledTimerWithTimeInterval: 3.0 target: self
+                                                      selector: @selector(dismiss) userInfo: nil repeats: NO];
+    //[SVProgressHUD dismiss];
+
+}
+
 
 typedef enum{
     Highlight,Sign,Note,Erase,Save
@@ -1340,32 +1900,13 @@ typedef enum{
             break;
         case Sign:{
             mainDelegate.isAnnotated=YES;
-//            UIAlertView *pinAlertView=[[UIAlertView alloc]initWithTitle:NSLocalizedString(@"Signature.PinCode",@"Pin Code") message:@"" delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel",@"Cancel") otherButtonTitles:NSLocalizedString(@"OK",@"OK"), nil];
-//            pinAlertView.alertViewStyle=UIAlertViewStylePlainTextInput;
-//            pinAlertView.tag=TAG_SIGN;
-//            
-//            UITextField* txtPin = [pinAlertView textFieldAtIndex:0];
-//            txtPin.clearButtonMode = UITextFieldViewModeWhileEditing;
-//            txtPin.keyboardType = UIKeyboardTypeNumberPad;
-//            txtPin.secureTextEntry=YES;
-//            
-//            [pinAlertView show];
-            
-            ManageSignatureViewController *signatureView = [[ManageSignatureViewController alloc] initWithFrame:CGRectMake(300, 200, 400, 350) ];
-            
 
-            signatureView.modalPresentationStyle = UIModalPresentationFormSheet;
-            signatureView.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-            [self presentViewController:signatureView animated:YES completion:nil];
-            UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-            if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown) {
-                signatureView.view.superview.frame = CGRectMake(150, 200, 400, 350);
-            } else {
-               signatureView.view.superview.frame = CGRectMake(300, 200, 400, 350);
-            }
-            
-            
-            signatureView.delegate=self;
+            [m_pdfview setBtnHighlight:NO];
+            [m_pdfview setBtnNote:NO];
+            [m_pdfview setBtnSign:YES];
+            UIAlertView *alertOk=[[UIAlertView alloc]initWithTitle:NSLocalizedString(@"Info",@"Info") message:NSLocalizedString(@"Alert.Sign",@"Click on pdf document to sign") delegate:self cancelButtonTitle:NSLocalizedString(@"OK",@"OK") otherButtonTitles: nil];
+            [alertOk show];
+
         }
             break;
         case Note:{
@@ -1411,6 +1952,53 @@ typedef enum{
         [FileManager appendToLogView:@"ReaderViewController" function:@"performaAnnotation" ExceptionTitle:[ex name] exceptionReason:[ex reason]];
     }
 }
+-(void)send:(NSString*)action note:(NSString*)note{
+    
+    mainDelegate.isAnnotated=YES;
+    NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
+    
+    NSString* searchUrl;
+    if([action isEqualToString:@"SendToPresident"])
+        searchUrl = [NSString stringWithFormat:@"http://%@?action=%@&token=%d&correspondenceId=%d&transferId=%d&inboxId=%d",serverUrl,action,mainDelegate.user.token.intValue,mainDelegate.corresponenceId.intValue,mainDelegate.transferId.intValue,mainDelegate.inboxId.intValue];
+    else
+        searchUrl = [NSString stringWithFormat:@"http://%@?action=%@&token=%d&correspondenceId=%d&transferId=%d&inboxId=%d&note=%@",serverUrl,action,mainDelegate.user.token.intValue,mainDelegate.corresponenceId.intValue,mainDelegate.transferId.intValue,mainDelegate.inboxId.intValue,note];
+    
+    NSURL *xmlUrl = [NSURL URLWithString:searchUrl];
+    NSData *XmlData = [[NSMutableData alloc] initWithContentsOfURL:xmlUrl];
+        NSString *validationResultAction=[CParser ValidateWithData:XmlData];
+        
+        if(![validationResultAction isEqualToString:@"OK"])
+        {
+            if([validationResultAction isEqualToString:@"Cannot access to the server"])
+            {
+                CFPendingAction*pa = [[CFPendingAction alloc] initWithActionUrl:searchUrl];
+                [mainDelegate.user addPendingAction:pa];
+            }else
+                
+                [self ShowMessage:validationResultAction];
+            
+        }else {
+            if((mainDelegate.selectedInbox-1)>=mainDelegate.user.menu.count)
+                mainDelegate.selectedInbox=1;
+            CMenu* currentInbox=((CMenu*)mainDelegate.user.menu[mainDelegate.selectedInbox-1]);
+                        NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
+            NSString* correspondenceUrl = [NSString stringWithFormat:@"http://%@?action=GetCorrespondences&token=%@&inboxIds=%d",serverUrl,mainDelegate.user.token,currentInbox.menuId];
+            NSURL *xmlUrl = [NSURL URLWithString:correspondenceUrl];
+            NSData *menuXmlData = [[NSMutableData alloc] initWithContentsOfURL:xmlUrl];
+            
+            NSMutableDictionary *correspondences=[CParser loadCorrespondencesWithData:menuXmlData];
+            
+            // ((CMenu*)mainDelegate.user.menu[mainDelegate.inboxForArchiveSelected]).correspondenceList=[correspondences objectForKey:[NSString stringWithFormat:@"%d",nb]];
+            
+            mainDelegate.searchModule.correspondenceList = [correspondences objectForKey:[NSString stringWithFormat:@"%d",currentInbox.menuId]];
+       //    correspondence.systemProperties=corr
+            
+            
+            [self ShowMessage:@"Action successfuly done."];
+            
+        }
+
+}
 
 
 
@@ -1424,7 +2012,22 @@ typedef enum{
         }else{
             correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
         }
-        CAttachment *attachment=correspondence.attachmentsList[self.attachmentId];
+        NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
+        
+        
+        if (correspondence.attachmentsList.count>0)
+        {
+            for(CAttachment* doc in correspondence.attachmentsList)
+            {
+                if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+                    [thumbnailrarray addObject:doc];
+                }
+                
+                
+            }
+        }
+
+        CAttachment *attachment=thumbnailrarray[self.attachmentId];
         //  mainDelegate.AnnotationSaved=YES;
         NSString* dir  = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
         NSString* path = [dir stringByAppendingString:@"/FoxitSaveAnnotation.pdf"];
@@ -1528,16 +2131,37 @@ typedef enum{
 	{
        
 		[delegate dismissReaderViewController:self]; // Dismiss the ReaderViewController
-      	}
+    }
+    
 }
 
 - (void)tappedInToolbar:(ReaderMainToolbar *)toolbar attachmentButton:(UIButton *)button
 {
-    if(mainPagebar.hidden==YES){
-        [mainPagebar showPagebar];
-        [self.view bringSubviewToFront:mainPagebar];
+    if(folderPagebar.hidden==YES){
+        if(mainPagebar.hidden==YES||mainPagebar==nil){
+        folderPagebar.hidden=false;
+       
+        [self.view bringSubviewToFront:folderPagebar];
+        }
+        else{
+            folderPagebar.hidden = true;
+            mainPagebar.hidden=true;
+            [mainPagebar removeFromSuperview];
+
+        }
     }
-    else [mainPagebar hidePagebar];
+    else{
+        [mainPagebar removeFromSuperview];
+        mainPagebar.hidden=true;
+        folderPagebar.hidden = true;
+
+    }
+    
+//    if(mainPagebar.hidden==YES){
+//        [mainPagebar showPagebar];
+//        [self.view bringSubviewToFront:mainPagebar];
+//    }
+//    else [mainPagebar hidePagebar];
 }
 - (void)tappedInToolbar:(ReaderMainToolbar *)toolbar lockButton:(UIButton *)button message:(NSString*)msg
 {
@@ -1550,17 +2174,55 @@ typedef enum{
 - (void)tappedInToolbar:(ReaderMainToolbar *)toolbar annotationButton:(UIButton *)button{
     
 	AnnotationsTableViewController* noteController = [[AnnotationsTableViewController alloc] initWithStyle:UITableViewStylePlain];
-
     CCorrespondence *correspondence;
+    CAttachment *attachment;
+    
+    
     if(self.menuId!=100){
         correspondence= ((CMenu*)mainDelegate.user.menu[self.menuId]).correspondenceList[self.correspondenceId];
     }else{
         correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
     }	NSMutableArray *annotProperties=[[NSMutableArray alloc]init];
+    NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
+    
+    
+    if (correspondence.attachmentsList.count>0)
+    {
+        for(CAttachment* doc in correspondence.attachmentsList)
+        {
+            if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+                [thumbnailrarray addObject:doc];
+            }
+            
+            
+        }
+    }
+
+    attachment = [thumbnailrarray objectAtIndex:mainDelegate.attachmentSelected];
+    
+    BOOL found=NO;
+    
+    if ([attachment.title rangeOfString:@".pdf"].location != NSNotFound) {
+        found = YES;
+    }
+
     for(id key in correspondence.toolbar){
-        if(([key isEqualToString:@"Highlight"] || [key isEqualToString:@"Sign"] ||[key isEqualToString:@"Note"]) && [[correspondence.toolbar objectForKey:key] isEqualToString:@"YES"]){
+        //jis signattachment
+        if([key isEqualToString:@"Sign"]){
+
+        
+            
+            if(mainDelegate.inboxForArchiveSelected!=0 && found && [attachment.isOriginalMail isEqualToString:@"YES"] ){
+                
+                [annotProperties addObject:key];
+            }
+
+        }
+
+        if(([key isEqualToString:@"Highlight"] ||[key isEqualToString:@"Note"]) && [[correspondence.toolbar objectForKey:key] isEqualToString:@"YES"]){
             [annotProperties addObject:key];
         }
+
     }
 	noteController.properties=annotProperties;
 	noteController.delegate=self;
@@ -1582,7 +2244,63 @@ typedef enum{
     // noteView.view.superview.center = self.view.center;
     transferView.delegate=self;
 }
-
+- (void)tappedInToolbar:(ReaderMainToolbar *)toolbar SignActionButton:(UIButton *)button{
+    NSMutableArray *actionProperties=[[NSMutableArray alloc]init];
+    CCorrespondence *correspondence;
+    if(self.menuId!=100){
+        correspondence= ((CMenu*)mainDelegate.user.menu[self.menuId]).correspondenceList[self.correspondenceId];
+    }else{
+        correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
+    }
+    for(CAction*  key in correspondence.SignActions){
+        if([[correspondence.toolbar objectForKey:@"Sign"] isEqualToString:@"YES"])
+        if(([key.action isEqualToString:@"Sign"] ||[key.action isEqualToString:@"SignAll"] || [key.action isEqualToString:@"FreeSign"] || [key.action isEqualToString:@"FreeSignAll"] || [key.action isEqualToString:@"SignAndSend"] )){
+            [actionProperties addObject:key];
+        }
+    }
+    // CCorrespondence *correspondence;
+  
+    NewActionTableViewController *newactionViewController=[[NewActionTableViewController alloc]initWithStyle:UITableViewStylePlain];
+    // newactionViewController.action=correspondence.actions;
+    self.notePopController = [[UIPopoverController alloc] initWithContentViewController:newactionViewController];
+	
+	//size as needed
+	self.notePopController.popoverContentSize = CGSizeMake(250, 50*correspondence.SignActions.count);
+    
+    
+	[self.notePopController presentPopoverFromRect:button.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+    newactionViewController.document=document;
+    newactionViewController.m_pdfview=m_pdfview;
+    newactionViewController.doc=m_pdfdoc;
+    newactionViewController.SignAction=actionProperties;
+    newactionViewController.delegate=self;
+}
+-(void)tappedInToolbar:(ReaderMainToolbar *)toolbar actionButton:(UIButton *)button{
+    NSMutableArray *actionProperties=[[NSMutableArray alloc]init];
+     CCorrespondence *correspondence;
+    for(id key in correspondence.toolbar){
+        if(([key isEqualToString:@"Accept"] ||[key isEqualToString:@"Reject"] || [key isEqualToString:@"Send"] || [key isEqualToString:@"Sign and Send"] )&&[[correspondence.toolbar objectForKey:key] isEqualToString:@"YES"]){
+            [actionProperties addObject:key];
+        }
+    }
+   // CCorrespondence *correspondence;
+    if(self.menuId!=100){
+        correspondence= ((CMenu*)mainDelegate.user.menu[self.menuId]).correspondenceList[self.correspondenceId];
+    }else{
+        correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
+    }
+    NewActionTableViewController *newactionViewController=[[NewActionTableViewController alloc]initWithStyle:UITableViewStylePlain];
+   // newactionViewController.action=correspondence.actions;
+    self.notePopController = [[UIPopoverController alloc] initWithContentViewController:newactionViewController];
+	
+	//size as needed
+	self.notePopController.popoverContentSize = CGSizeMake(250, 50*correspondence.actions.count);
+    
+    
+	[self.notePopController presentPopoverFromRect:button.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+    newactionViewController.document=document;
+    newactionViewController.delegate=self;
+}
 - (void)tappedInToolbar:(ReaderMainToolbar *)toolbar actionsButton:(UIButton *)button
 {
     
@@ -1592,11 +2310,25 @@ typedef enum{
     }else{
         correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
     }
+    NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
     
-        CAttachment *file=correspondence.attachmentsList[self.attachmentId];
+    
+    if (correspondence.attachmentsList.count>0)
+    {
+        for(CAttachment* doc in correspondence.attachmentsList)
+        {
+            if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+                [thumbnailrarray addObject:doc];
+            }
+            
+            
+        }
+    }
+
+        CAttachment *file=thumbnailrarray[self.attachmentId];
     
     ActionsTableViewController* actionController = [[ActionsTableViewController alloc] initWithStyle:UITableViewStylePlain];
-    
+    actionController.document=document;
 	actionController.correspondenceId=correspondence.Id;
     actionController.docId=file.docId;
 	actionController.actions=correspondence.actions;
@@ -1609,17 +2341,104 @@ typedef enum{
     
 	[self.notePopController presentPopoverFromRect:button.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 
-    
+    actionController.delegate=self;
 
 }
+-(void)PopUpCommentDialog:(UITableViewController*)viewcontroller Action:(CAction*)action{
+    
+    if ([delegate respondsToSelector:@selector(dismissReaderViewController:)] == YES)
+    {
+        [self.notePopController dismissPopoverAnimated:NO];
+        AcceptWithCommentViewController *AcceptView = [[AcceptWithCommentViewController alloc] initWithActionName:CGRectMake(0, 200, 450, 370)  Action:action];
 
+        AcceptView.modalPresentationStyle = UIModalPresentationFormSheet;
+        AcceptView.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        [self presentViewController:AcceptView animated:YES completion:nil];
+        AcceptView.view.superview.frame = CGRectMake(300, 200, 450, 370); //it's important to do this after presentModalViewController
+        // noteView.view.superview.center = self.view.center;
+        AcceptView.delegate=self;
+
+       // [delegate dismissReaderViewController:self]; // Dismiss the ReaderViewController
+    }
+}
+
+-(void)PopUpCommentDialogWhenSign:(NewActionTableViewController*)viewcontroller Action:(CAction*)action document:(ReaderDocument*)document{
+    
+    if ([delegate respondsToSelector:@selector(dismissReaderViewController:)] == YES)
+    {
+        [self.notePopController dismissPopoverAnimated:NO];
+        AcceptWithCommentViewController *AcceptView = [[AcceptWithCommentViewController alloc] initWithActionName:CGRectMake(0, 200, 450, 370)  Action:action];
+        
+        AcceptView.modalPresentationStyle = UIModalPresentationFormSheet;
+        AcceptView.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        [self presentViewController:AcceptView animated:YES completion:nil];
+        AcceptView.view.superview.frame = CGRectMake(300, 200, 450, 370); //it's important to do this after presentModalViewController
+        // noteView.view.superview.center = self.view.center;
+        AcceptView.delegate=self;
+        AcceptView.document =document;
+        
+        // [delegate dismissReaderViewController:self]; // Dismiss the ReaderViewController
+    }
+}
+
+-(void)dismissPopUp:(NewActionTableViewController*)viewcontroller{
+    [self.notePopController dismissPopoverAnimated:NO];
+
+}
+-(void)movehome:(TransferViewController *)viewcontroller{
+        
+        if ([delegate respondsToSelector:@selector(dismissReaderViewController:)] == YES)
+        {
+            [self.notePopController dismissPopoverAnimated:NO];
+            [delegate dismissReaderViewController:self]; // Dismiss the ReaderViewController
+        }
+    
+}
+-(void)SignAndMovehome:(NewActionTableViewController *)viewcontroller{
+    
+    if ([delegate respondsToSelector:@selector(dismissReaderViewController:)] == YES)
+    {
+        [self.notePopController dismissPopoverAnimated:NO];
+        [delegate dismissReaderViewController:self]; // Dismiss the ReaderViewController
+    }
+    
+}
+-(void)ActionMoveHome:(AcceptWithCommentViewController *)viewcontroller{
+    if ([delegate respondsToSelector:@selector(dismissReaderViewController:)] == YES)
+	{
+        
+            [delegate dismissReaderViewController:self];
+    }
+       
+}
+
+-(void)closeMetadata{
+    [mainToolbar hideToolbar];
+    //[mainPagebar hidePagebar];
+    if( mainPagebar.hidden==false){
+        [mainPagebar removeFromSuperview];
+        mainPagebar.hidden=true;
+    }
+[self.noteContainer removeFromSuperview];
+    [metadataContainer removeFromSuperview];
+    m_pdfview.frame=CGRectMake ((self.view.bounds.size.width-self.view.bounds.size.width/1.75)/2, 5, self.view.bounds.size.width/1.75, self.view.bounds.size.height-5);
+    isMetadataVisible=!isMetadataVisible;
+}
+
+
+-(void)hide{
+    [self closeMetadata];
+}
 
 - (void)tappedInToolbar:(ReaderMainToolbar *)toolbar metadataButton:(UIButton *)button
 {
     @try{
     [mainToolbar hideToolbar];
-    [mainPagebar hidePagebar];
-    if(isNoteVisible)
+    //[mainPagebar hidePagebar];
+        if( mainPagebar.hidden==false){
+            [mainPagebar removeFromSuperview];
+            mainPagebar.hidden=true;
+        }    if(isNoteVisible)
         [self.noteContainer removeFromSuperview];
     if(isMetadataVisible){
         [metadataContainer removeFromSuperview];
@@ -1639,13 +2458,37 @@ typedef enum{
     
     metadataTable.currentCorrespondence=correspondence;
    
-    [self addChildViewController:metadataTable];
-    metadataContainer=[[UIView alloc]initWithFrame:CGRectMake(0,0,320, self.view.bounds.size.height )];
-    //   self.noteContainer.backgroundColor = [UIColor colorWithRed:1/255.0f green:1/255.0f  blue:1/255.0f  alpha:0.9];
     
+            
+    [self addChildViewController:metadataTable];
+            
+            UIButton *close = [UIButton buttonWithType:UIButtonTypeCustom];
+            
+            close.frame = CGRectMake(288, 10, 20, 20);
+            [close setBackgroundImage:[UIImage imageNamed:@"delete_item.png"] forState:UIControlStateNormal];
+            [close addTarget:self action:@selector(hide) forControlEvents:UIControlEventTouchUpInside];
+            [close setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            
+            
+    metadataContainer=[[UIView alloc]initWithFrame:CGRectMake(0,0,320, self.view.bounds.size.height )];
+
+            [metadataContainer addSubview:close];
+            
     [metadataContainer addSubview:metadataTable.view];
+            [metadataContainer bringSubviewToFront:close];
     [self.view addSubview:metadataContainer];
     m_pdfview.frame=CGRectMake(320+(self.view.bounds.size.width-(320+m_pdfview.frame.size.width))/2, 0, m_pdfview.frame.size.width, m_pdfview.frame.size.height);
+
+            //jis orientation
+            UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+            if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown) {
+                [metadataContainer removeFromSuperview];
+                [self.view addSubview:metadataContainer];
+                m_pdfview.frame=CGRectMake (325, 0, self.view.bounds.size.width/1.75, self.view.bounds.size.height-5);
+                metadataContainer.frame=CGRectMake(0, 0, 320, 1019);
+                numberPages.frame = CGRectMake(360, 950, 80, 40);
+            }
+            //endjis orientation
         }
     
     isMetadataVisible=!isMetadataVisible;
@@ -1709,18 +2552,27 @@ isNoteVisible=!isNoteVisible;
     noteView.delegate=self;
   }
 
-
-- (void)tappedInToolbar:(ReaderMainToolbar *)toolbar nextButton:(UIButton *)button documentReader:(ReaderDocument *)newdocument correspondenceId:(NSInteger)correspondenceId
+//jen PreviousNext
+//- (void)tappedInToolbar:(ReaderMainToolbar *)toolbar nextButton:(UIButton *)button documentReader:(ReaderDocument *)newdocument correspondenceId:(NSInteger)correspondenceId
+//{
+//    [self loadNewDocumentReader:newdocument documentId:correspondenceId];
+//}
+//
+//- (void)tappedInToolbar:(ReaderMainToolbar *)toolbar previousButton:(UIButton *)button documentReader:(ReaderDocument *)newdocument correspondenceId:(NSInteger)correspondenceId
+//{
+//    [self loadNewDocumentReader:newdocument documentId:correspondenceId];
+//    
+//}
+- (void)tappedInToolbar:(ReaderMainToolbar *)toolbar nextButton:(UIButton *)button documentReader:(ReaderDocument *)newdocument correspondenceId:(NSInteger)correspondenceId attachementId:(NSInteger)attachementId
 {
-    [self loadNewDocumentReader:newdocument documentId:correspondenceId];
+    [self loadNewDocumentReader:newdocument attachementId:attachementId];
 }
 
-- (void)tappedInToolbar:(ReaderMainToolbar *)toolbar previousButton:(UIButton *)button documentReader:(ReaderDocument *)newdocument correspondenceId:(NSInteger)correspondenceId
+- (void)tappedInToolbar:(ReaderMainToolbar *)toolbar previousButton:(UIButton *)button documentReader:(ReaderDocument *)newdocument correspondenceId:(NSInteger)correspondenceId attachementId:(NSInteger)attachementId
 {
-    [self loadNewDocumentReader:newdocument documentId:correspondenceId];
+    [self loadNewDocumentReader:newdocument attachementId:attachementId];
     
 }
-
 
 
 
@@ -1753,6 +2605,7 @@ isNoteVisible=!isNoteVisible;
 {
     @try{
    document=newdocument;
+        [numberPages setTitle:[NSString stringWithFormat:@"1 of %@",document.pageCount] forState:UIControlStateNormal];
     self.attachmentId=fileId;
     contentViews = [NSMutableDictionary new];
     currentPage=0;
@@ -1933,9 +2786,6 @@ isNoteVisible=!isNoteVisible;
 }
 
 
-- (void)dismiss {
-	[SVProgressHUD dismiss];
-}
 
 
 
@@ -1946,3 +2796,41 @@ isNoteVisible=!isNoteVisible;
 }
 
 @end
+
+
+
+
+
+//@implementation ReaderPagebarShadow
+//
+//#pragma mark ReaderPagebarShadow class methods
+//
+//+ (Class)layerClass
+//{
+//    return [CAGradientLayer class];
+//}
+//
+//#pragma mark ReaderPagebarShadow instance methods
+//
+//- (id)initWithFrame:(CGRect)frame
+//{
+//    if ((self = [super initWithFrame:frame]))
+//    {
+//        self.autoresizesSubviews = NO;
+//        self.userInteractionEnabled = NO;
+//        self.contentMode = UIViewContentModeRedraw;
+//        self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+//        self.backgroundColor = [UIColor clearColor];
+//        
+//        CAGradientLayer *layer = (CAGradientLayer *)self.layer;
+//        //	 UIColor *blackColor = [UIColor colorWithWhite:0.42f alpha:1.0f];
+//        //	 UIColor *clearColor = [UIColor colorWithWhite:0.42f alpha:0.0f];
+//        UIColor *blackColor = [UIColor colorWithWhite:0.0f alpha:0.8f];
+//        UIColor *clearColor = [UIColor colorWithWhite:0.1f alpha:0.8f];
+//        layer.colors = [NSArray arrayWithObjects:(id)clearColor.CGColor, (id)blackColor.CGColor, nil];
+//    }
+//    
+//    return self;
+//}
+//
+//@end

@@ -17,7 +17,7 @@
 "Retry"="Retry";
 "YES"="YES";
 "NO"="NO";
-
+"Alert.Downloading"="Downloading";
 "Login.Licence"="License Key";
 "Login"="Login";
 "Menu.Home"="Home";
@@ -25,8 +25,12 @@
 "Menu.Previous"="Previous";
 "Menu.Lock"="Lock";
 "Menu.Unlock"="Unlock";
+"Menu.Accept"="Accept";
+"Menu.Reject"="Reject";
+"Menu.Send"="Send";
+"Menu.Action"="Actions";
 "Menu.Highlight"="Highlight";
-"Menu.Sign"="Sign";
+"Menu.sign"="Signature";
 "Menu.Note"="Note";
 "Menu.Search"="Search";
 "Menu.Metadata"="Metadata";
@@ -34,6 +38,7 @@
 "Menu.Attachments"="Attachments";
 "Menu.Comments"="Comments";
 "Menu.Annotations"="Annotations";
+"Menu.Sign"="Sign";
 "Menu.More"="More...";
 "Highlight"="Highlight";
 "Sign"="Sign";
@@ -52,7 +57,9 @@
 "Signature.Blue"="Blue";
 "Transfer.TransferCorrespondence"="Transfer Correspondence";
 "Transfer.TransferTo"="Transfer To";
-"Transfer.Direction"="Direction";
+"Send.SendCorrespondence"="Send Correspondence";
+//"Transfer.Direction"="Direction";
+"Transfer.Purpose"="Purpose";
 "Transfer.DueDate"="Due Date";
 "Transfer.Note"="Note";
 "Transfer.Cancel"="Cancel";
@@ -67,7 +74,7 @@
 "Search.SearchInbox"="Search Inbox";
 "Search.SearchArchive"="Search Archive";
 "Search.SimpleSearch"="Simple Search";
-"Search.AdvanceSearch"="Advance Search";
+"Search.AdvancedSearch"="Advanced Search";
 "Search.Sender"="Sender";
 "Search.Subject"="Subject";
 "Search.Reference"="Reference";
@@ -91,6 +98,7 @@
 "Alert.NoTask"="No Tasks Found";
 "Alert.Sync"="Synchronizing ...";
 "Alert.Searching"="Searching ...";
+"Alert.Signing"="Signing ...";
 "Alert.Loading"="Loading ...";
 "Alert.Extension"="Document type not supported.";
 "Alert.RequiredFields"="PLease fill all required fields.";
@@ -103,7 +111,11 @@
 "Alert.NoSignature"="No Signature Available,please configure a signature";
 "Alert.SaveDoc"="Are you sure you want to save?";
 "Alert.Colors"="Color values must be between 0 and 255.";
-
+"Alert.Send"="Sending ...";
+"Accept.AcceptCorrespondence"="Accept Correspondence";
+"Accept.Note"="Note";
+"Accept.Message"="Please fill Note field.";
+"Reject.RejectCorrespondence"="Reject Correspondence";
 
 
 

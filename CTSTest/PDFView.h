@@ -15,6 +15,13 @@
 #import "fpdf_text.h"
 
 @class PDFDocument;
+
+@protocol TransferViewtestDelegate <NSObject>
+
+@required
+- (void)showDocument:(id)object;
+@end
+
 @interface PDFView : UIView {
     CGPoint startLocation;
 	CGPoint endLocation;
@@ -46,20 +53,25 @@
     FS_FLOAT m_pageHeight;
     
 }
-
+@property(nonatomic,unsafe_unretained,readwrite) id <TransferViewtestDelegate> delegate;
 @property (nonatomic, readwrite) BOOL btnNote;
 @property (nonatomic, readwrite) BOOL btnHighlight;
 @property (nonatomic, readwrite) BOOL btnErase;
 @property (nonatomic, readwrite) BOOL btnSign;
+@property (nonatomic, readwrite) BOOL FreeSignAll;
+@property (nonatomic, readwrite) int DocumentPagesNb;
 @property (nonatomic, strong) NSString* annotationNoteMsg;
 @property (nonatomic, assign) NSInteger annotationSignWidth;
 @property (nonatomic, assign) NSInteger annotationSignHeight;
-
 @property (nonatomic, readwrite) CGPoint startLocation;
 @property (nonatomic, readwrite) CGPoint endLocation;
+@property (nonatomic,assign) PDFDocument *doc;
+@property (nonatomic,readwrite) BOOL zooming;
+
 - (void) OnPrevPage;
 - (void) OnNextPage;
 -(void) OnZoomIn;
+-(int)GetPageIndex;
 -(void) OnZoomOut;
 - (void)initPDFDoc: (PDFDocument*)pdoc;
 - (CGPoint)PageToDevicePoint:(FPDF_PAGE)page p1:(CGPoint)point;

@@ -12,14 +12,15 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    self.selectedInbox=1;
+    //self.selectedInbox=1;
     self.splitViewController = [[UISplitViewController alloc] init];
     [self.splitViewController setValue:[NSNumber numberWithFloat:256.0] forKey:@"_masterColumnWidth"];
-    self.splitViewController.view.backgroundColor = [UIColor blackColor];
+    self.splitViewController.view.backgroundColor = [UIColor grayColor];
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     return YES;
 }
-							
+
+
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

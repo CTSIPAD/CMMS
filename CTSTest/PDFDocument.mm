@@ -10,7 +10,8 @@
 #import "GDataXMLNode.h"
 #define StampFileName @"FoxitLogo"
 #define AttachFileName @"FoxitForm"
-
+#import "CMenu.h"
+#import "CUser.h"
 //Define a log function.
 #define PRINT_RET(str, ret) if((ret)){NSLog(@"%@ failed(%i)", (str), (ret));return nil;}
 
@@ -115,7 +116,9 @@ FS_BOOL MyMapFont(FS_LPVOID param, FS_LPCSTR name, FS_INT32 charset,
 
 
 
-@implementation PDFDocument
+@implementation PDFDocument{
+    AppDelegate* mainDelegate;
+}
 @synthesize annotPoint;
 - (void)dealloc
 {
@@ -190,6 +193,7 @@ FS_BOOL MyMapFont(FS_LPVOID param, FS_LPCSTR name, FS_INT32 charset,
 
 -(BOOL) openPDFDocument: (const char*) file
 {
+    
     if(m_fpdfdoc != NULL)
     {
         FPDF_Doc_Close(m_fpdfdoc);
@@ -214,7 +218,7 @@ FS_BOOL MyMapFont(FS_LPVOID param, FS_LPCSTR name, FS_INT32 charset,
     ret = FPDF_Doc_GetPageCount(m_fpdfdoc, &m_pageCount);
 	if(ret != FS_ERR_SUCCESS)
 		return FALSE;
-	
+    
 	m_pPageArray = new FPDF_PAGE[m_pageCount];
 	memset(m_pPageArray, 0, sizeof(FPDF_PAGE)*(m_pageCount));
 	m_current_page = [self getPDFPage:0];
@@ -271,7 +275,7 @@ FS_BOOL MyMapFont(FS_LPVOID param, FS_LPCSTR name, FS_INT32 charset,
 	FS_BITMAP dib;
 	FS_RESULT ret = FS_Bitmap_Create(bmWidth, bmHeight, FS_DIBFORMAT_RGBA, NULL, 0, &dib);
 	PRINT_RET(@"create dib", ret);
-	void* pt = FS_Bitmap_GetBuffer(dib);
+	//void* pt = FS_Bitmap_GetBuffer(dib);
 	//memset(pt, 0xff, FS_Bitmap_GetStride(dib)*bmHeight);
 	
 	FS_RECT rectClip;
@@ -361,11 +365,11 @@ FS_BOOL MyMapFont(FS_LPVOID param, FS_LPCSTR name, FS_INT32 charset,
     FPDF_Annot_GetCount(m_current_page,&count);
     // FPDF_TEXTPAGE textPage = NULL;
     // res=FPDF_Text_LoadPage(m_current_page, &textPage);
-    FS_INT32 rectCount = 1;
+    //Unused Variable FS_INT32 rectCount = 1;
     // FPDF_Text_CountRects (textPage, 0, 15, &rectCount);
     NSLog(@"%f %f %f %f",pt1.x,pt1.y,pt2.x,pt2.y);
     FS_RECTF rect={static_cast<FS_FLOAT>(pt1.x),static_cast<FS_FLOAT>(pt1.y),static_cast<FS_FLOAT>(pt2.x),static_cast<FS_FLOAT>(pt2.y)};
-    int charIndex;
+    //Unused Variable int charIndex;
     //FPDF_Text_GetCharIndexAtPos(textPage, pt1.x, pt1.y, pt2.x, pt2.y, &charIndex);
     
     for(int i=0; i<10;i++)
@@ -453,7 +457,7 @@ FS_BOOL MyMapFont(FS_LPVOID param, FS_LPCSTR name, FS_INT32 charset,
     pencilAnnot.lines = line;
 
 
-    FS_RESULT ret = FPDF_Annot_Add(m_current_page, FPDF_ANNOTTYPE_PENCIL, &pencilAnnot, sizeof(pencilAnnot), (FPDF_ANNOT*)&m_nAnnotIndex);
+   //Unused Variable FS_RESULT ret = FPDF_Annot_Add(m_current_page, FPDF_ANNOTTYPE_PENCIL, &pencilAnnot, sizeof(pencilAnnot), (FPDF_ANNOT*)&m_nAnnotIndex);
     m_nAnnotIndex++;
     delete line; 
     [m_pdfview setNeedsDisplay];
@@ -592,13 +596,12 @@ FS_BOOL MyMapFont(FS_LPVOID param, FS_LPCSTR name, FS_INT32 charset,
 	
     //CGPoint ptLeftTop = [m_pdfview DeviceToPagePoint:m_current_page p1:CGPointMake(0,0)];
     //CGPoint ptRightBottom = [m_pdfview DeviceToPagePoint:m_current_page p1:CGPointMake(0, 0)];
-    NSLog(@"%@",pt1.x);
-    NSLog(@"%@",pt1.y);
+    NSLog(@"%f",pt1.x);
+    NSLog(@"%f",pt1.y);
     FS_RECTF rect = {static_cast<FS_FLOAT>(pt1.x - 12), static_cast<FS_FLOAT>(pt1.y -16),static_cast<FS_FLOAT>(pt1.x+ 12),static_cast<FS_FLOAT>(pt1.y+16)};
 	noteAnnot.rect = rect;//noteRect;
 	FPDF_Annot_Add(m_current_page,FPDF_ANNOTTYPE_NOTE,&noteAnnot,noteAnnot.size,(FPDF_ANNOT*)&m_nAnnotIndex);
     m_nAnnotIndex++;
-    
 
     NSString* dir  = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
     NSString* path = [dir stringByAppendingString:@"/FoxitSaveAnnotation.pdf"];
@@ -634,6 +637,7 @@ FS_BOOL MyMapFont(FS_LPVOID param, FS_LPCSTR name, FS_INT32 charset,
 
 - (void)AddStampAnnot:(CGPoint)ptLeftTop secondPoint:(CGPoint)ptRightBottom previousPoint:(CGPoint)prevPt
 {
+    mainDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
    // hasAnnotation=YES;
     
@@ -651,8 +655,11 @@ FS_BOOL MyMapFont(FS_LPVOID param, FS_LPCSTR name, FS_INT32 charset,
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *documentsPath = [documentsDirectory
 							   stringByAppendingPathComponent:@"myimage.png"];
-    // NSData *myImageData = UIImageJPEGRepresentation(UIImage *image, <#CGFloat compressionQuality#>)(myImage);
-    [fileManager createFileAtPath:documentsPath contents:self.signatureData attributes:nil];
+    
+   // NSData* data = [((CMenu*)mainDelegate.user.menu[1]).icon dataUsingEncoding:NSUTF8StringEncoding];
+    NSData * data= [NSData dataWithBase64EncodedString:((CMenu*)mainDelegate.user.menu[1]).icon];
+    
+    [fileManager createFileAtPath:documentsPath contents:data attributes:nil];
     
     NSLog(@"%@",documentsPath);
     const char* jpgpath = [documentsPath UTF8String];
@@ -672,8 +679,8 @@ FS_BOOL MyMapFont(FS_LPVOID param, FS_LPCSTR name, FS_INT32 charset,
 	stampInfo.size = sizeof(stampInfo);
     
     
-    
-    NSString* su=[[NSString alloc]initWithString:@"Signature"];
+    NSString* su=@"Signature";
+   // NSString* su=[[NSString alloc]initWithString:@"Signature"];
     const unsigned char *intext=(unsigned char*)[su UTF8String];
     
     stampInfo.name[0]=intext[0];
@@ -718,7 +725,7 @@ FS_BOOL MyMapFont(FS_LPVOID param, FS_LPCSTR name, FS_INT32 charset,
 	stampInfo.imgdata = (unsigned char*)buf;
     //if(self.newAnnotation==NO)
     //{
-    FPDF_ANNOT annot;
+   //Unused variable FPDF_ANNOT annot;
     //FPDF_Annot_GetAtPos(m_current_page, stampx,stampy, &annot);
     
     //FPDF_Annot_Delete(m_current_page,annot);
@@ -841,9 +848,9 @@ FS_BOOL MyMapFont(FS_LPVOID param, FS_LPCSTR name, FS_INT32 charset,
 {
     int annot_count = 0;
     FPDF_Annot_GetCount(m_current_page, &annot_count);
-    int buf_size;
+  //Unused variable  int buf_size;
     FPDF_ANNOT annot;
-    FS_RESULT res;
+   //Unused Variable FS_RESULT res;
     
     // res= FPDF_Annot_GetAtPos(m_current_page, annotPoint.x, annotPoint.y, &annot);
     FPDF_Annot_GetAtPos(m_current_page, annotPoint.x,annotPoint.y, &annot);
@@ -898,8 +905,8 @@ FS_BOOL MyMapFont(FS_LPVOID param, FS_LPCSTR name, FS_INT32 charset,
 	
     //CGPoint ptLeftTop = [m_pdfview DeviceToPagePoint:m_current_page p1:CGPointMake(0,0)];
     //CGPoint ptRightBottom = [m_pdfview DeviceToPagePoint:m_current_page p1:CGPointMake(0, 0)];
-    NSLog(@"%@",pt1.x);
-    NSLog(@"%@",pt1.y);
+    NSLog(@"%f",pt1.x);
+    NSLog(@"%f",pt1.y);
     FS_RECTF rect = {static_cast<FS_FLOAT>(pt1.x - 12), static_cast<FS_FLOAT>(pt1.y -16),static_cast<FS_FLOAT>(pt1.x+ 12),static_cast<FS_FLOAT>(pt1.y+16)};
 	noteAnnot.rect = rect;//noteRect;
 	FPDF_Annot_Add(m_current_page,FPDF_ANNOTTYPE_NOTE,&noteAnnot,noteAnnot.size,(FPDF_ANNOT*)&m_nAnnotIndex);

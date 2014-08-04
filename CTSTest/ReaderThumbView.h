@@ -30,6 +30,7 @@
 @protected // Instance variables
 
 	UIImageView *imageView;
+    UILabel *labelview;
 }
 
 @property (atomic, strong, readwrite) NSOperation *operation;
@@ -37,6 +38,7 @@
 @property (nonatomic, assign, readwrite) NSUInteger targetTag;
 
 - (void)showImage:(UIImage *)image;
+-(void) showLabel:(NSString *)text;
 
 - (void)showTouched:(BOOL)touched;
 
