@@ -1659,7 +1659,7 @@
      // CAttachment *currentDoc=correspondence.attachmentsList[self.attachmentId];
     
 	NSString* url = [NSString stringWithFormat:@"action=TransferCorrespondence&token=%@&correspondenceId=%@&destinationId=%@&purposeId=%@&dueDate=%@&note=%@",userTemp.token,correspondence.TransferId,dest.rid,routeLabel.labelId,date,note];
-	CFPendingAction*pa = [[CFPendingAction alloc] initWithActionUrl:url];
+	CFPendingAction*pa = [[CFPendingAction alloc] initWithActionUrl:[url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
 	
 	
 	[userTemp processSingleAction:pa];
@@ -1963,7 +1963,7 @@ typedef enum{
     else
         searchUrl = [NSString stringWithFormat:@"http://%@?action=%@&token=%d&correspondenceId=%d&transferId=%d&inboxId=%d&note=%@",serverUrl,action,mainDelegate.user.token.intValue,mainDelegate.corresponenceId.intValue,mainDelegate.transferId.intValue,mainDelegate.inboxId.intValue,note];
     
-    NSURL *xmlUrl = [NSURL URLWithString:searchUrl];
+    NSURL *xmlUrl = [NSURL URLWithString:[searchUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     NSData *XmlData = [[NSMutableData alloc] initWithContentsOfURL:xmlUrl];
         NSString *validationResultAction=[CParser ValidateWithData:XmlData];
         
