@@ -274,9 +274,8 @@ vm_size_t freeMemory(void) {
         NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
         
         BOOL isOfflineMode = [[[NSUserDefaults standardUserDefaults] stringForKey:@"offline_mode"] boolValue];
-        if(indexPath.row==0){
-        }
-        else{
+        if(indexPath.row!=0){
+        
             localdetailViewController = nil;
             
             if(indexPath.row==totalMenuItemsCount-1){
@@ -392,7 +391,7 @@ vm_size_t freeMemory(void) {
                             else{
                                 
                                 [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:mainDelegate.selectedInbox inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
-                                return;
+                               // return;
                             }
                             
                             UINavigationController *navController=[[UINavigationController alloc] init];
