@@ -1083,39 +1083,7 @@ ReaderMainToolbarDelegate, ReaderMainPagebarDelegate, ReaderContentViewDelegate,
             }
             // }
         }
-        else if(recognizer.direction == UISwipeGestureRecognizerDirectionDown){
-            
-            // self.attachmentId -=1;
-            
-            CATransition *transition = [CATransition animation];
-            [transition setDelegate:self];
-            [transition setDuration:0.5f];
-            
-            [transition setType:kCATransitionFromTop];
-            [transition setSubtype:kCATransitionFromTop];
-            
-            [transition setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-            
-            
-            [self.view.layer addAnimation:transition forKey:@"any"];
-            [self ChangeFileOnSwipe: self.attachmentId-1];
-        }
-        else if(recognizer.direction == UISwipeGestureRecognizerDirectionUp){
-            // self.attachmentId +=1;
-            
-            CATransition *transition = [CATransition animation];
-            [transition setDelegate:self];
-            [transition setDuration:0.5f];
-            
-            [transition setType:kCATransitionFromBottom];
-            [transition setSubtype:kCATransitionFromBottom];
-            
-            [transition setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-            
-            
-            [self.view.layer addAnimation:transition forKey:@"any"];
-            [self ChangeFileOnSwipe:self.attachmentId+1];
-        }
+        [m_pdfview setNeedsDisplay];
     }
     @catch (NSException *ex) {
         [FileManager appendToLogView:@"ReaderViewController" function:@"handleSwipeFrom" ExceptionTitle:[ex name] exceptionReason:[ex reason]];
@@ -2330,6 +2298,8 @@ typedef enum{
 }
 
 -(void)closeMetadata{
+    float factor=1;
+
     [mainToolbar hideToolbar];
     //[mainPagebar hidePagebar];
     if( mainPagebar.hidden==false){
@@ -2338,7 +2308,15 @@ typedef enum{
     }
     [self.noteContainer removeFromSuperview];
     [metadataContainer removeFromSuperview];
-    m_pdfview.frame=CGRectMake ((self.view.bounds.size.width-self.view.bounds.size.width/1.75)/2, 5, self.view.bounds.size.width/1.75, self.view.bounds.size.height-5);
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+
+    if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown) {
+        factor=1;
+    }
+    else
+        factor=1.75;
+    m_pdfview.frame=CGRectMake ((self.view.bounds.size.width-self.view.bounds.size.width/factor)/2, 5, self.view.bounds.size.width/factor, self.view.bounds.size.height-5);
+    
     PdfScroll.frame=m_pdfview.frame;
     [self centreView];
     isMetadataVisible=!isMetadataVisible;
