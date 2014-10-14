@@ -269,17 +269,20 @@ vm_size_t freeMemory(void) {
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath  {
     //[self logMemUsage];
-    NSLog(@"aaaaaa");
     @try{
         NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
         
         BOOL isOfflineMode = [[[NSUserDefaults standardUserDefaults] stringForKey:@"offline_mode"] boolValue];
-        if(indexPath.row!=0){
-        
+        if(indexPath.row==0){
+        }
+        else{
             localdetailViewController = nil;
             
             if(indexPath.row==totalMenuItemsCount-1){
-                mainDelegate.selectedInbox=indexPath.row;
+                CMenu* currentInbox=((CMenu*)mainDelegate.user.menu[0]);
+                mainDelegate.Inboxselected=currentInbox.menuId;
+
+                mainDelegate.selectedInbox=indexPath.row-1;
                 if(mainDelegate.searchModule ==nil){
                     NSString* searchUrl = [NSString stringWithFormat:@"http://%@?action=BuildAdvancedSearch&token=%@",serverUrl,mainDelegate.user.token];
                     NSURL *xmlUrl = [NSURL URLWithString:searchUrl];
@@ -318,6 +321,7 @@ vm_size_t freeMemory(void) {
                 
                 mainDelegate.isBasketSelected = YES;
                 CMenu* currentInbox=((CMenu*)mainDelegate.user.menu[indexPath.row-1]);
+                mainDelegate.Inboxselected=currentInbox.menuId;
                 mainDelegate.inboxForArchiveSelected = indexPath.row-1;
                 
                 if(isOfflineMode){
@@ -391,7 +395,7 @@ vm_size_t freeMemory(void) {
                             else{
                                 
                                 [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:mainDelegate.selectedInbox inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
-                               // return;
+                                
                             }
                             
                             UINavigationController *navController=[[UINavigationController alloc] init];

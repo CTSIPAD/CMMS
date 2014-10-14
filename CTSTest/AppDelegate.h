@@ -19,6 +19,7 @@
 @property (strong, nonatomic) CSearch *searchModule;
 @property (nonatomic, strong) MainMenuViewController *masterView;
 @property (assign, nonatomic) NSInteger selectedInbox;
+@property (assign, nonatomic) NSInteger Inboxselected;
 @property (assign, nonatomic)NSInteger inboxForArchiveSelected;
 @property(nonatomic,assign)NSInteger menuSelectedItem;
 @property (strong, nonatomic) NSString* userLanguage;

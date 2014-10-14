@@ -22,7 +22,7 @@
 - (void)showDocument:(id)object;
 @end
 
-@interface PDFView : UIView {
+@interface PDFView : UIView<UIScrollViewDelegate> {
     CGPoint startLocation;
 	CGPoint endLocation;
     CGPoint currentPoint;
@@ -73,6 +73,8 @@
 -(void) OnZoomIn;
 -(int)GetPageIndex;
 -(void) OnZoomOut;
+-(FS_FLOAT)getWidth;
+-(FS_FLOAT)getHeight;
 - (void)initPDFDoc: (PDFDocument*)pdoc;
 - (CGPoint)PageToDevicePoint:(FPDF_PAGE)page p1:(CGPoint)point;
 - (CGPoint)DeviceToPagePoint:(FPDF_PAGE)page p1:(CGPoint)point;

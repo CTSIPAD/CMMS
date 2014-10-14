@@ -26,6 +26,7 @@
 @implementation SearchResultViewController{
     AppDelegate *appDelegate ;
     AppDelegate *mainDelegate ;
+    BOOL Break;
 }
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -304,23 +305,44 @@
     
     NSArray *result = [doc nodesForXPath:@"//Result" error:nil];
     GDataXMLElement *resultXML =  [result objectAtIndex:0];
+    NSString* stauts=[(GDataXMLElement *) [resultXML attributeForName:@"status"] stringValue];
+    if([stauts.lowercaseString isEqualToString:@"ok"]){
+    
     NSString* lockedby=[(GDataXMLElement *) [resultXML attributeForName:@"lockedby"] stringValue];
     
     if([lockedby isEqualToString:[NSString stringWithFormat:@"%@ %@",mainDelegate.user.firstName,mainDelegate.user.lastName]] || [lockedby isEqualToString:@"none"]){
         
         if(correspondence.Locked){
-            if([correspondence performCorrespondenceAction:@"UnlockCorrespondence"]){
+            NSString* res=[correspondence performCorrespondenceAction:@"UnlockCorrespondence"] ;
+            if([res isEqualToString:@"OK"]){
                 correspondence.Locked=NO;
                 [sender setImage:[UIImage imageNamed:@"cts_Unlock.png"] forState:UIControlStateNormal];
             }
+            else{
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alert",@"Error")
+                                                                message:[NSString stringWithFormat:@"%@ ",res]
+                                                               delegate:nil
+                                                      cancelButtonTitle:@"OK"
+                                                      otherButtonTitles:nil];
+                [alert show];
+            }
         }else{
-            if([correspondence performCorrespondenceAction:@"LockCorrespondence"]){
+            NSString* res=[correspondence performCorrespondenceAction:@"LockCorrespondence"];
+            if([res isEqualToString:@"OK"]){
                 correspondence.Locked=YES;
                 mainDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
                 correspondence.LockedBy = [NSString stringWithFormat:@"%@ %@",mainDelegate.user.firstName,mainDelegate.user.lastName];
                 [sender setImage:[UIImage imageNamed:@"cts_Lock.png"] forState:UIControlStateNormal];
             }
-
+            else{
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alert",@"Error")
+                                                                message:[NSString stringWithFormat:@"%@ ",res]
+                                                               delegate:nil
+                                                      cancelButtonTitle:@"OK"
+                                                      otherButtonTitles:nil];
+                [alert show];
+            }
+            
         }
     }
     else {
@@ -332,13 +354,24 @@
                                               otherButtonTitles:nil];
         [alert show];
     }
+    }else{
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alert",@"Error")
+                                                        message:[NSString stringWithFormat:@"%@ ",resultXML.stringValue]
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+        [alert show];
 
-    
+    }
+
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
- 
+    [self performSelectorOnMainThread:@selector(increaseProgress) withObject:@"" waitUntilDone:YES];
+    //[SVProgressHUD showWithStatus:NSLocalizedString(@"Alert.Loading",@"Loading ...") maskType:SVProgressHUDMaskTypeBlack];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+
             mainDelegate.searchSelected = indexPath.row;
     CCorrespondence *correspondence=self.searchResult.correspondenceList[indexPath.row];
     
@@ -359,37 +392,43 @@
     NSString* lockedby=[(GDataXMLElement *) [resultXML attributeForName:@"lockedby"] stringValue];
     
     if([lockedby isEqualToString:[NSString stringWithFormat:@"%@ %@",mainDelegate.user.firstName,mainDelegate.user.lastName]] || [lockedby isEqualToString:@"none"]){
-         [self performSelectorOnMainThread:@selector(increaseProgress) withObject:@"" waitUntilDone:YES];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        
+//        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+                 Break=NO;
 
-        if(correspondence.attachmentsList == nil){
-        
-            mainDelegate.corresponenceId = correspondence.Id;
-            mainDelegate.transferId = correspondence.TransferId;
-            
-            NSString* attachmentUrl = [NSString stringWithFormat:@"http://%@?action=GetAttachments&token=%@&docId=%@",serverUrl,mainDelegate.user.token,correspondence.Id];
+                //if(correspondence.attachmentsList == nil){
+                    
+                    mainDelegate.corresponenceId = correspondence.Id;
+                    mainDelegate.transferId = correspondence.TransferId;
 
-            NSURL *xmlUrl = [NSURL URLWithString:attachmentUrl];
-            NSData *attachmentXmlData = [[NSMutableData alloc] initWithContentsOfURL:xmlUrl];
-
-            NSMutableArray *attachments=[CParser loadSpecifiqueAttachment:attachmentXmlData];
-        
-            [correspondence setAttachmentsList:attachments];
-        }
-        
-        
-        
-        if([correspondence performCorrespondenceAction:@"LockCorrespondence"]){
-            correspondence.Locked=YES;
-            mainDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-            correspondence.LockedBy = [NSString stringWithFormat:@"%@ %@",mainDelegate.user.firstName,mainDelegate.user.lastName];
-        }
+                    NSString* attachmentUrl = [NSString stringWithFormat:@"http://%@?action=GetAttachments&token=%@&docId=%@",serverUrl,mainDelegate.user.token,correspondence.Id];
+                    
+                    NSURL *xmlUrl = [NSURL URLWithString:attachmentUrl];
+                    NSData *attachmentXmlData = [[NSMutableData alloc] initWithContentsOfURL:xmlUrl];
+                    
+                    NSMutableArray *attachments=[CParser loadSpecifiqueAttachment:attachmentXmlData];
+                if(attachments.count==0){
+                    [self performSelectorOnMainThread:@selector(dismiss) withObject:nil waitUntilDone:YES];
+                    Break=YES;
+                }
+                else{
+                    [correspondence setAttachmentsList:attachments];
+                //}
+                
+                
+                
+                if([[correspondence performCorrespondenceAction:@"LockCorrespondence"] isEqualToString:@"OK"]){
+                    correspondence.Locked=YES;
+                    mainDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+                    correspondence.LockedBy = [NSString stringWithFormat:@"%@ %@",mainDelegate.user.firstName,mainDelegate.user.lastName];
+                }}
+//                dispatch_async(dispatch_get_main_queue(), ^{
+                    if(!Break)
+                        [self performSelectorInBackground:@selector(openDocument:) withObject:[NSString stringWithFormat:@"%d",indexPath.row]];
+                    Break=NO;
             
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self performSelectorInBackground:@selector(openDocument:) withObject:[NSString stringWithFormat:@"%d",indexPath.row]];
-            
-        });
-    });
+//        });
+//    });
 
  
     }
@@ -404,8 +443,7 @@
     }
                 }
     else{
-        [self performSelectorOnMainThread:@selector(increaseProgress) withObject:@"" waitUntilDone:YES];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+       // [self performSelectorOnMainThread:@selector(increaseProgress) withObject:@"" waitUntilDone:YES];
 
         if(correspondence.attachmentsList.count == 0){
         
@@ -422,15 +460,15 @@
         
 
         
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self performSelectorInBackground:@selector(openDocument:) withObject:[NSString stringWithFormat:@"%d",indexPath.row]];
-
-                
-            });
-        });
-
+          
         
     }
+                       dispatch_async(dispatch_get_main_queue(), ^{
+            [self performSelectorInBackground:@selector(openDocument:) withObject:[NSString stringWithFormat:@"%d",indexPath.row]];
+            
+            
+        });
+                       });
 
 }
 
@@ -539,7 +577,17 @@
         return NO;
     else return YES;
 }
-
+-(void)ShowMessage:(NSString*)message{
+    
+    NSString *msg = message;
+    UIAlertView *alert = [[UIAlertView alloc]
+                          initWithTitle:NSLocalizedString(@"Alert",@"Alert")
+                          message: msg
+                          delegate:nil
+                          cancelButtonTitle:NSLocalizedString(@"OK",@"OK")
+                          otherButtonTitles: nil];
+    [alert show];
+}
 
 - (void)increaseProgress{
     [SVProgressHUD showWithStatus:NSLocalizedString(@"Alert.Loading",@"Loading ...") maskType:SVProgressHUDMaskTypeBlack];

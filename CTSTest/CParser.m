@@ -620,6 +620,9 @@
     NSString* status=[(GDataXMLElement *) [correspondencesXML attributeForName:@"status"] stringValue];
     
     if([status isEqualToString:@"Error"]){
+        [self performSelectorOnMainThread:@selector(ShowMessage:) withObject:nil waitUntilDone:YES];
+
+     //   [self ShowMessage:correspondencesXML.stringValue];
         return nil;
     }
     
@@ -731,7 +734,17 @@
     }
     return allInboxes;
 }
-
++(void)ShowMessage:(NSString*)message{
+    
+    NSString *msg = @"Server Issue";
+    UIAlertView *alert = [[UIAlertView alloc]
+                          initWithTitle:NSLocalizedString(@"Alert",@"Alert")
+                          message: msg
+                          delegate:nil
+                          cancelButtonTitle:NSLocalizedString(@"OK",@"OK")
+                          otherButtonTitles: nil];
+    [alert show];
+}
 
 +(NSMutableArray*)loadSpecifiqueAttachment:(NSData*)xmlData{
     NSError *error;
@@ -750,7 +763,19 @@
               GDataXMLElement *AttachmentsXML =  [Attachments objectAtIndex:0];
               attachments=[self loadAttachmentListWith:AttachmentsXML];
     }
-
+    if(Attachments.count==0){
+        
+        NSArray *results = [doc nodesForXPath:@"//Result" error:nil];
+        
+        GDataXMLElement *resultxml =  [results objectAtIndex:0];
+        
+        NSString* status=[(GDataXMLElement *) [resultxml attributeForName:@"status"] stringValue];
+        
+        if([status isEqualToString:@"Error"]){
+            //[self ShowMessage:resultxml.stringValue];
+            [self performSelectorOnMainThread:@selector(ShowMessage:) withObject:nil waitUntilDone:YES];
+        }
+    }
     return attachments;
     
 }
@@ -1206,10 +1231,15 @@ NSArray *searchCriteriaEl =[searchXML nodesForXPath:@"CriteriaList/Criteria" err
                 propertiesList=[self GetPropertiesFrom:propertiesEl];
             }
             NSArray *toolbar =[correspondence nodesForXPath:@"Toolbar/ToolbarItems" error:nil];
-            NSMutableDictionary *toolbarItems =  [self loadItems:toolbar];
+            NSMutableDictionary *toolbarItems;
+            if (toolbar.count > 0) {
+                toolbarItems =  [self loadItems:toolbar];
+            }
             
             NSArray *toolbarAction =[correspondence nodesForXPath:@"Toolbar/ToolbarActions/ToolbarAction" error:nil];
-            NSMutableArray *toolbarActions =  [self loadActionsWith:toolbarAction];
+            NSMutableArray *toolbarActions;
+            if (toolbarAction.count>0)
+                toolbarActions =  [self loadActionsWith:toolbarAction];
             
             
             
