@@ -88,6 +88,7 @@
 	{
         
         closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        closeButton.frame = CGRectMake(self.frame.size.width, 10, 61, 20);
         [closeButton setTintColor:[UIColor whiteColor]];
         [closeButton setTitle:[NSString stringWithFormat:@"Hide Menu"] forState:UIControlStateNormal];
         [closeButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 0, -80,0)];
@@ -441,7 +442,6 @@ BOOL lockSelected=NO;
          ((CCorrespondence*) ((CMenu*)self.user.menu[self.menuId]).correspondenceList[self.correspondenceId]).Locked=NO;
        
     }
- // [delegate tappedInToolbar:self lockButton:button];
     
 }
 
@@ -473,9 +473,7 @@ BOOL lockSelected=NO;
 
 - (void)nextButtonTapped :(UIButton *)button
 {
-    //jen PreviousNext
     CAttachment *fileToOpen;
-   // self.correspondenceId=self.correspondenceId+1;
     self.attachmentId=self.attachmentId+1;
 
     
@@ -484,27 +482,10 @@ BOOL lockSelected=NO;
     mainDelegate.attachmentType = @"nextprevioustype";
     
         correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
-        //jen PreviousNext
-       // NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
-        
-        
-//        if (correspondence.attachmentsList.count>0)
-//        {
-//            for(CAttachment* doc in correspondence.attachmentsList)
-//            {
-//                if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
-//                    [thumbnailrarray addObject:doc];
-//                }
-//                
-//                
-//            }
-//        }
 
-   
     fileToOpen=correspondence.attachmentsList[self.attachmentId];
     [self updateTitleWithLocation:fileToOpen.location withName:fileToOpen.title];
 
-    //jis next
     [self performSelectorOnMainThread:@selector(increaseProgress) withObject:@"" waitUntilDone:YES];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
 
@@ -523,10 +504,7 @@ BOOL lockSelected=NO;
         NSURL *xmlUrl = [NSURL URLWithString:urlTextEscaped];
         
                   NSData *attachmentXmlData = [[NSMutableData alloc] initWithContentsOfURL:xmlUrl];
-        
-        
-        
-        
+
         NSError *error;
         GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:attachmentXmlData
                                                                options:0 error:&error];
@@ -575,15 +553,12 @@ BOOL lockSelected=NO;
         }
             dispatch_async(dispatch_get_main_queue(), ^{
                 NSString *tempPdfLocation=[fileToOpen saveInCacheinDirectory:fileToOpen.docId fromSharepoint:mainDelegate.isSharepoint];
-                //  NSString *tempPdfLocation=[CParser loadPdfFile:fileToOpen.url inDirectory:correspondence.Id];
                 ReaderDocument *newdocument=nil;
                 if ([ReaderDocument isPDF:tempPdfLocation] == YES) // File must exist
                 {
                     newdocument=[self OpenPdfReader:tempPdfLocation];
                 }
                 
-                //jen PreviousNext
-                //[delegate tappedInToolbar:self nextButton:button documentReader:newdocument correspondenceId:self.correspondenceId];
                 [delegate tappedInToolbar:self nextButton:button documentReader:newdocument correspondenceId:self.correspondenceId attachementId:self.attachmentId];
                 
                 if(self.attachmentId==attachementsCount-1){

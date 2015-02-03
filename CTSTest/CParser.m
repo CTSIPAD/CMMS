@@ -20,6 +20,8 @@
 #import "CSearchCriteria.h"
 #import "CSearch.h"
 #import "CSearchType.h"
+#import "HighlightClass.h"
+#import "note.h"
 
 @implementation CParser{
     AppDelegate *mainDelegate;
@@ -620,6 +622,9 @@
     NSString* status=[(GDataXMLElement *) [correspondencesXML attributeForName:@"status"] stringValue];
     
     if([status isEqualToString:@"Error"]){
+        [self performSelectorOnMainThread:@selector(ShowMessage:) withObject:nil waitUntilDone:YES];
+
+     //   [self ShowMessage:correspondencesXML.stringValue];
         return nil;
     }
     
@@ -731,7 +736,17 @@
     }
     return allInboxes;
 }
-
++(void)ShowMessage:(NSString*)message{
+    
+    NSString *msg = @"Server Issue";
+    UIAlertView *alert = [[UIAlertView alloc]
+                          initWithTitle:NSLocalizedString(@"Alert",@"Alert")
+                          message: msg
+                          delegate:nil
+                          cancelButtonTitle:NSLocalizedString(@"OK",@"OK")
+                          otherButtonTitles: nil];
+    [alert show];
+}
 
 +(NSMutableArray*)loadSpecifiqueAttachment:(NSData*)xmlData{
     NSError *error;
@@ -750,7 +765,19 @@
               GDataXMLElement *AttachmentsXML =  [Attachments objectAtIndex:0];
               attachments=[self loadAttachmentListWith:AttachmentsXML];
     }
-
+    if(Attachments.count==0){
+        
+        NSArray *results = [doc nodesForXPath:@"//Result" error:nil];
+        
+        GDataXMLElement *resultxml =  [results objectAtIndex:0];
+        
+        NSString* status=[(GDataXMLElement *) [resultxml attributeForName:@"status"] stringValue];
+        
+        if([status isEqualToString:@"Error"]){
+            //[self ShowMessage:resultxml.stringValue];
+            [self performSelectorOnMainThread:@selector(ShowMessage:) withObject:nil waitUntilDone:YES];
+        }
+    }
     return attachments;
     
 }
@@ -853,13 +880,15 @@
 
 
 +(NSMutableArray*)loadAttachmentListWith:(GDataXMLElement*)attachmentEl{
-    
+    AppDelegate * mainDelegate=(AppDelegate*)[[UIApplication sharedApplication] delegate];
     NSMutableArray* attachments = [[NSMutableArray alloc] init];
     NSArray *attachmentXML = [attachmentEl elementsForName:@"Attachment"];
     
     
     for(GDataXMLElement *attachment in attachmentXML)
     {
+        [mainDelegate.IncomingHighlights removeAllObjects];
+        [mainDelegate.IncomingNotes removeAllObjects];
         NSString* folderName;
         NSString* fileUri;
         NSString* title;
@@ -953,32 +982,275 @@
             thumbnailBase64 = thumbnailEl.stringValue;
         }
         
-         NSMutableArray* annotations = [[NSMutableArray alloc] init];
+//         NSMutableArray* annotations = [[NSMutableArray alloc] init];
+//        NSArray *annotationsXml = [attachment elementsForName:@"Annotations"];
+//        
+//        if (annotationsXml.count > 0) {
+//            GDataXMLElement *annotationsEl = (GDataXMLElement *) [annotationsXml objectAtIndex:0];
+//            NSArray *annotationsArray = [annotationsEl elementsForName:@"Annotation"];
+//            for(GDataXMLElement *note in annotationsArray)
+//            {
+//                NSInteger noteId=[[(GDataXMLElement *) [note attributeForName:@"NoteId"] stringValue]intValue];
+//                NSString *security=[(GDataXMLElement *) [note attributeForName:@"SecurityLevel"] stringValue];
+//                NSString *author=[(GDataXMLElement *) [note attributeForName:@"Author"] stringValue];
+//                NSString *date=[(GDataXMLElement *) [note attributeForName:@"CreationDate"] stringValue];
+//                 BOOL owner=[[(GDataXMLElement *) [note attributeForName:@"Owner"] stringValue] boolValue];
+//                
+//                NSString* value=[note stringValue];
+//                
+//                
+//                CAnnotation* annotation = [[CAnnotation alloc] initWithId:noteId author:author securityLevel:security note:value creationDate:date owner:owner];
+//                [annotations addObject:annotation];
+//                
+//                
+//            }
+//        }
+        NSMutableArray* annotations = [[NSMutableArray alloc] init];
         NSArray *annotationsXml = [attachment elementsForName:@"Annotations"];
         
         if (annotationsXml.count > 0) {
             GDataXMLElement *annotationsEl = (GDataXMLElement *) [annotationsXml objectAtIndex:0];
-            NSArray *annotationsArray = [annotationsEl elementsForName:@"Annotation"];
-            for(GDataXMLElement *note in annotationsArray)
+            //            NSArray *annotationsArray = [annotationsEl elementsForName:@"Annotation"];
+            //            for(GDataXMLElement *note in annotationsArray)
+            //            {
+            //                NSInteger noteId=[[(GDataXMLElement *) [note attributeForName:@"NoteId"] stringValue]intValue];
+            //                NSString *security=[(GDataXMLElement *) [note attributeForName:@"SecurityLevel"] stringValue];
+            //                NSString *author=[(GDataXMLElement *) [note attributeForName:@"Author"] stringValue];
+            //                NSString *date=[(GDataXMLElement *) [note attributeForName:@"CreationDate"] stringValue];
+            //                 BOOL owner=[[(GDataXMLElement *) [note attributeForName:@"Owner"] stringValue] boolValue];
+            //
+            //                NSString* value=[note stringValue];
+            //
+            //
+            //                CAnnotation* annotation = [[CAnnotation alloc] initWithId:noteId author:author securityLevel:security note:value creationDate:date owner:owner];
+            //                [annotations addObject:annotation];
+            //
+            //
+            //            }
+            
+            NSArray *Notes = [annotationsEl nodesForXPath:@"Notes" error:nil];
+            
+            
+            
+            GDataXMLElement *NotesXML;
+            
+            if(Notes.count>0){
+                
+                NotesXML = [Notes objectAtIndex:0];
+                
+            }
+            
+            
+            
+            NSArray *noteXML = [NotesXML elementsForName:@"Note"];
+            
+            NSString *noteX;
+            
+            NSString *noteY;
+            
+            NSString *notepage;
+            
+            NSString *noteMSG;
+            
+            
+            
+            
+            for(GDataXMLElement *notee in noteXML)
+                
             {
-                NSInteger noteId=[[(GDataXMLElement *) [note attributeForName:@"NoteId"] stringValue]intValue];
-                NSString *security=[(GDataXMLElement *) [note attributeForName:@"SecurityLevel"] stringValue];
-                NSString *author=[(GDataXMLElement *) [note attributeForName:@"Author"] stringValue];
-                NSString *date=[(GDataXMLElement *) [note attributeForName:@"CreationDate"] stringValue];
-                 BOOL owner=[[(GDataXMLElement *) [note attributeForName:@"Owner"] stringValue] boolValue];
                 
-                NSString* value=[note stringValue];
+                NSArray *noteXs = [notee elementsForName:@"noteX"];
+                
+                if (noteXs.count > 0) {
+                    
+                    GDataXMLElement *noteXEl = (GDataXMLElement *) [noteXs objectAtIndex:0];
+                    
+                    noteX = noteXEl.stringValue;
+                    
+                }
                 
                 
-                CAnnotation* annotation = [[CAnnotation alloc] initWithId:noteId author:author securityLevel:security note:value creationDate:date owner:owner];
-                [annotations addObject:annotation];
                 
+                NSArray *noteYs = [notee elementsForName:@"noteY"];
+                
+                if (noteYs.count > 0) {
+                    
+                    GDataXMLElement *noteYEl = (GDataXMLElement *) [noteYs objectAtIndex:0];
+                    
+                    noteY = noteYEl.stringValue;
+                    
+                }
+                
+                
+                
+                NSArray *pages = [notee elementsForName:@"page"];
+                
+                if (pages.count > 0) {
+                    
+                    GDataXMLElement *pageEl = (GDataXMLElement *) [pages objectAtIndex:0];
+                    
+                    notepage = pageEl.stringValue;
+                    
+                }
+                
+                
+                
+                NSArray *noteMSGs = [notee elementsForName:@"noteMSG"];
+                
+                if (noteMSGs.count > 0) {
+                    
+                    GDataXMLElement *noteMSGEl = (GDataXMLElement *) [noteMSGs objectAtIndex:0];
+                    
+                    noteMSG = noteMSGEl.stringValue;
+                    
+                }
+                
+                
+                
+                
+                
+                CGPoint ptLeftTop;
+                
+                ptLeftTop.x=[noteX intValue];
+                
+                ptLeftTop.y=[noteY intValue];
+                
+                
+                
+                note* noteObj=[[note alloc]initWithName:ptLeftTop.x ordinate:ptLeftTop.y note:noteMSG PageNb:notepage.intValue AttachmentId:AttachmentId.intValue];
+                [mainDelegate.IncomingNotes addObject:noteObj];
+                
+            }
+            
+            
+            
+            
+            
+            NSArray *Highlights = [annotationsEl nodesForXPath:@"Highlights" error:nil];
+            
+            
+            
+            GDataXMLElement *HighlightsXML;
+            
+            if(Highlights.count>0){
+                
+                HighlightsXML = [Highlights objectAtIndex:0];
+                
+            }
+            
+            
+            
+            NSArray *HighlightXML = [HighlightsXML elementsForName:@"Highlight"];
+            
+            NSString *HighlightX1;
+            
+            NSString *HighlightY1;
+            
+            NSString *HighlightX2;
+            
+            NSString *HighlightY2;
+            
+            NSString *Highlightpage;
+            
+            
+            
+            
+            
+            for(GDataXMLElement *Highlight in HighlightXML)
+                
+            {
+                
+                NSArray *HighlightX1s = [Highlight elementsForName:@"HighlightX1"];
+                
+                if (HighlightX1s.count > 0) {
+                    
+                    GDataXMLElement *HighlightX1El = (GDataXMLElement *) [HighlightX1s objectAtIndex:0];
+                    
+                    HighlightX1= HighlightX1El.stringValue;
+                    
+                }
+                
+                
+                
+                NSArray *HighlightX2s = [Highlight elementsForName:@"HighlightX2"];
+                
+                if (HighlightX2s.count > 0) {
+                    
+                    GDataXMLElement *HighlightX2El = (GDataXMLElement *) [HighlightX2s objectAtIndex:0];
+                    
+                    HighlightX2= HighlightX2El.stringValue;
+                    
+                }
+                
+                
+                
+                NSArray *HighlightY1s = [Highlight elementsForName:@"HighlightY1"];
+                
+                if (HighlightY1s.count > 0) {
+                    
+                    GDataXMLElement *HighlightY1El = (GDataXMLElement *) [HighlightY1s objectAtIndex:0];
+                    
+                    HighlightY1= HighlightY1El.stringValue;
+                    
+                }
+                
+                
+                
+                NSArray *HighlightY2s = [Highlight elementsForName:@"HighlightY2"];
+                
+                if (HighlightY2s.count > 0) {
+                    
+                    GDataXMLElement *HighlightY2El = (GDataXMLElement *) [HighlightY2s objectAtIndex:0];
+                    
+                    HighlightY2= HighlightY2El.stringValue;
+                    
+                }
+                
+                
+                
+                
+                
+                NSArray *Highlightpages = [Highlight elementsForName:@"page"];
+                
+                if (Highlightpages.count > 0) {
+                    
+                    GDataXMLElement *HighlightpageEl = (GDataXMLElement *) [Highlightpages objectAtIndex:0];
+                    
+                    Highlightpage = HighlightpageEl.stringValue;
+                    
+                }
+                
+                
+                
+                
+                
+                
+                
+                CGPoint ptLeftTop;
+                
+                CGPoint ptRightBottom;
+                
+                
+                
+                ptLeftTop.x=[HighlightX1 intValue];
+                
+                ptLeftTop.y=[HighlightY1 intValue];
+                
+                ptRightBottom.x=[HighlightX2 intValue];
+                
+                ptRightBottom.y=[HighlightY2 intValue];
+                
+                
+                
+                HighlightClass* obj=[[HighlightClass alloc]initWithName:ptLeftTop.x ordinate:ptLeftTop.y height:ptRightBottom.x width:ptRightBottom.y PageNb:Highlightpage.intValue AttachmentId:AttachmentId.intValue];
+                [mainDelegate.IncomingHighlights addObject:obj];
                 
             }
         }
-
         CAttachment* newAttachment = [[CAttachment alloc] initWithTitle:title docId:fileUri url:url  thumbnailBase64:thumbnailBase64 location:folderName SiteId:SiteId WebId:WebId FileId:FileId AttachmentId:AttachmentId FileUrl:FileUrl ThubnailUrl:thumbnailUrl isOriginalMail:isOriginalMail FolderName:FolderName];
         [newAttachment setAnnotations:annotations];
+        [newAttachment setNoteAnnotations:[mainDelegate.IncomingNotes copy]];
+        [newAttachment setHighlightAnnotations:[mainDelegate.IncomingHighlights copy]];
         [attachments addObject:newAttachment];
         
     }
@@ -1206,10 +1478,15 @@ NSArray *searchCriteriaEl =[searchXML nodesForXPath:@"CriteriaList/Criteria" err
                 propertiesList=[self GetPropertiesFrom:propertiesEl];
             }
             NSArray *toolbar =[correspondence nodesForXPath:@"Toolbar/ToolbarItems" error:nil];
-            NSMutableDictionary *toolbarItems =  [self loadItems:toolbar];
+            NSMutableDictionary *toolbarItems;
+            if (toolbar.count > 0) {
+                toolbarItems =  [self loadItems:toolbar];
+            }
             
             NSArray *toolbarAction =[correspondence nodesForXPath:@"Toolbar/ToolbarActions/ToolbarAction" error:nil];
-            NSMutableArray *toolbarActions =  [self loadActionsWith:toolbarAction];
+            NSMutableArray *toolbarActions;
+            if (toolbarAction.count>0)
+                toolbarActions =  [self loadActionsWith:toolbarAction];
             
             
             

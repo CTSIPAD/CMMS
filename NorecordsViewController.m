@@ -117,7 +117,8 @@
     [super viewDidLoad];
     //jis toolbar
     mainDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    
+    self.navigationItem.hidesBackButton=YES;
+    self.navigationController.navigationBarHidden = YES;
     UIToolbar *toolbar = [[UIToolbar alloc] init];
     toolbar.frame = CGRectMake(0, 0, self.view.frame.size.width+90, 51);
     CGFloat red = 88.0f / 255.0f;
@@ -130,12 +131,13 @@
     
     UILabel *userlabel =[[UILabel alloc] initWithFrame:CGRectMake(100, 20, 100, 44)];
     userlabel.text = [NSString stringWithFormat:@"%@ %@",mainDelegate.user.firstName,mainDelegate.user.lastName];
-    userlabel.text = [userlabel.text uppercaseString];
+    //userlabel.text = [userlabel.text uppercaseString];
     userlabel.frame = CGRectMake(10, 0, 400, 60);
     userlabel.textColor = [UIColor whiteColor];
     userlabel.shadowColor = [UIColor colorWithRed:0.0f / 255.0f green:155.0f / 255.0f blue:213.0f / 255.0f alpha:1.0];
     //userlabel.shadowOffset = CGSizeMake(0.0, 2.0);
     userlabel.font =[UIFont fontWithName:@"Helvetica" size:20.0f];
+    
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithCustomView:userlabel];
     
     
@@ -151,8 +153,6 @@
     
     toolbar.items = [NSArray arrayWithObjects:separator,item,itemlogout, nil];
     
-    
-    [self.view addSubview:toolbar];
     //end jis toolbar
     
     
@@ -167,7 +167,8 @@
     noRecords.textColor = [UIColor whiteColor];
     [self.view setBackgroundColor:[UIColor colorWithRed:red green:green blue:blue alpha:1.0]];
     [self.view addSubview:noRecords];
-    
+    [self.view addSubview:toolbar];
+
 
     
 	// Do any additional setup after loading the view.

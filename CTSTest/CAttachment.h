@@ -27,6 +27,8 @@
 @property (nonatomic,retain) NSString* ThubnailUrl;
 @property (nonatomic,retain) NSString* isOriginalMail;
 @property (nonatomic,retain) NSString* FolderName;
+@property (nonatomic, retain) NSMutableArray* HighlightAnnotations;
+@property (nonatomic, retain) NSMutableArray* NoteAnnotations;
 
 -(id) initWithTitle:(NSString*)title docId:(NSString*)did url:(NSString*)url  thumbnailBase64:(NSString*)thumbnailBase64 location:(NSString*)folderName;
 

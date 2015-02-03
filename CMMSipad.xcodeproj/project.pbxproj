@@ -43,6 +43,8 @@
 		A20916C2195024560053C754 /* FreeSign.png in Resources */ = {isa = PBXBuildFile; fileRef = A20916C1195024560053C754 /* FreeSign.png */; };
 		A20916C41950758C0053C754 /* FreeSignAll.png in Resources */ = {isa = PBXBuildFile; fileRef = A20916C31950758C0053C754 /* FreeSignAll.png */; };
 		A256B4FA1895775E0009ABB5 /* AdvanceSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A256B4F91895775E0009ABB5 /* AdvanceSearchViewController.m */; };
+		A27E9DCA1A665CF4002E1754 /* HighlightClass.m in Sources */ = {isa = PBXBuildFile; fileRef = A27E9DC71A665CF4002E1754 /* HighlightClass.m */; };
+		A27E9DCB1A665CF4002E1754 /* note.m in Sources */ = {isa = PBXBuildFile; fileRef = A27E9DC91A665CF4002E1754 /* note.m */; };
 		A29AA71A185B07DE00944DDB /* PdfGalleryCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A29AA719185B07DE00944DDB /* PdfGalleryCollectionViewCell.m */; };
 		A29AA71D185B09B100944DDB /* PdfThumbScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = A29AA71C185B09B100944DDB /* PdfThumbScrollView.m */; };
 		A29AA720185B3C4200944DDB /* title_bg.png in Resources */ = {isa = PBXBuildFile; fileRef = A29AA71F185B3C4200944DDB /* title_bg.png */; };
@@ -62,9 +64,6 @@
 		A2A4B8C51858B25C00ABFF67 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A2A4B8C31858B25C00ABFF67 /* Main.storyboard */; };
 		A2A4B8C81858B25C00ABFF67 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A2A4B8C71858B25C00ABFF67 /* LoginViewController.m */; };
 		A2A4B8CA1858B25C00ABFF67 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2A4B8C91858B25C00ABFF67 /* Images.xcassets */; };
-		A2A4B8D11858B25C00ABFF67 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2A4B8D01858B25C00ABFF67 /* XCTest.framework */; };
-		A2A4B8D21858B25C00ABFF67 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2A4B8B11858B25C00ABFF67 /* Foundation.framework */; };
-		A2A4B8D31858B25C00ABFF67 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2A4B8B51858B25C00ABFF67 /* UIKit.framework */; };
 		A2A4B8E81858B42900ABFF67 /* MainMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A2A4B8E71858B42900ABFF67 /* MainMenuViewController.m */; };
 		A2A4B8EB1858B46D00ABFF67 /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A2A4B8EA1858B46D00ABFF67 /* HomeViewController.m */; };
 		A2A4C6CD1859AC530084DE6A /* cts_Logo.png in Resources */ = {isa = PBXBuildFile; fileRef = A2A4C6CC1859AC530084DE6A /* cts_Logo.png */; };
@@ -184,16 +183,6 @@
 		A2CC23871871CED700568111 /* NoteAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = A2CC23861871CED700568111 /* NoteAlertView.m */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		A2A4B8D41858B25C00ABFF67 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A2A4B8A61858B25C00ABFF67 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A2A4B8AD1858B25C00ABFF67;
-			remoteInfo = CTSTest;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		956903A419235EC5002A9E2D /* down.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = down.jpg; sourceTree = "<group>"; };
 		956903A519235EC5002A9E2D /* up.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = up.jpg; sourceTree = "<group>"; };
@@ -236,6 +225,10 @@
 		A20916C31950758C0053C754 /* FreeSignAll.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FreeSignAll.png; sourceTree = "<group>"; };
 		A256B4F81895775E0009ABB5 /* AdvanceSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdvanceSearchViewController.h; sourceTree = "<group>"; };
 		A256B4F91895775E0009ABB5 /* AdvanceSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvanceSearchViewController.m; sourceTree = "<group>"; };
+		A27E9DC61A665CF4002E1754 /* HighlightClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlightClass.h; sourceTree = "<group>"; };
+		A27E9DC71A665CF4002E1754 /* HighlightClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightClass.m; sourceTree = "<group>"; };
+		A27E9DC81A665CF4002E1754 /* note.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = note.h; sourceTree = "<group>"; };
+		A27E9DC91A665CF4002E1754 /* note.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = note.m; sourceTree = "<group>"; };
 		A29AA718185B07DE00944DDB /* PdfGalleryCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PdfGalleryCollectionViewCell.h; sourceTree = "<group>"; };
 		A29AA719185B07DE00944DDB /* PdfGalleryCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PdfGalleryCollectionViewCell.m; sourceTree = "<group>"; };
 		A29AA71B185B09B100944DDB /* PdfThumbScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PdfThumbScrollView.h; sourceTree = "<group>"; };
@@ -267,7 +260,6 @@
 		A2A4B8C61858B25C00ABFF67 /* LoginViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		A2A4B8C71858B25C00ABFF67 /* LoginViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		A2A4B8C91858B25C00ABFF67 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		A2A4B8CF1858B25C00ABFF67 /* CMMSipadTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CMMSipadTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2A4B8D01858B25C00ABFF67 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		A2A4B8E61858B42900ABFF67 /* MainMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainMenuViewController.h; sourceTree = "<group>"; };
 		A2A4B8E71858B42900ABFF67 /* MainMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainMenuViewController.m; sourceTree = "<group>"; };
@@ -492,16 +484,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A2A4B8CC1858B25C00ABFF67 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A2A4B8D11858B25C00ABFF67 /* XCTest.framework in Frameworks */,
-				A2A4B8D31858B25C00ABFF67 /* UIKit.framework in Frameworks */,
-				A2A4B8D21858B25C00ABFF67 /* Foundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -572,7 +554,6 @@
 			isa = PBXGroup;
 			children = (
 				A2A4B8AE1858B25C00ABFF67 /* CMMSipad.app */,
-				A2A4B8CF1858B25C00ABFF67 /* CMMSipadTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -724,6 +705,10 @@
 				A2A3D8DD1895540300750768 /* CSearchType.m */,
 				A2A5FC42189FE6750032F135 /* FileManager.h */,
 				A2A5FC43189FE6750032F135 /* FileManager.m */,
+				A27E9DC61A665CF4002E1754 /* HighlightClass.h */,
+				A27E9DC71A665CF4002E1754 /* HighlightClass.m */,
+				A27E9DC81A665CF4002E1754 /* note.h */,
+				A27E9DC91A665CF4002E1754 /* note.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -944,24 +929,6 @@
 			productReference = A2A4B8AE1858B25C00ABFF67 /* CMMSipad.app */;
 			productType = "com.apple.product-type.application";
 		};
-		A2A4B8CE1858B25C00ABFF67 /* CMMSipadTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = A2A4B8E31858B25C00ABFF67 /* Build configuration list for PBXNativeTarget "CMMSipadTests" */;
-			buildPhases = (
-				A2A4B8CB1858B25C00ABFF67 /* Sources */,
-				A2A4B8CC1858B25C00ABFF67 /* Frameworks */,
-				A2A4B8CD1858B25C00ABFF67 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				A2A4B8D51858B25C00ABFF67 /* PBXTargetDependency */,
-			);
-			name = CMMSipadTests;
-			productName = CTSTestTests;
-			productReference = A2A4B8CF1858B25C00ABFF67 /* CMMSipadTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -973,9 +940,6 @@
 				TargetAttributes = {
 					A2A4B8AD1858B25C00ABFF67 = {
 						DevelopmentTeam = 4GWU23F735;
-					};
-					A2A4B8CE1858B25C00ABFF67 = {
-						TestTargetID = A2A4B8AD1858B25C00ABFF67;
 					};
 				};
 			};
@@ -994,7 +958,6 @@
 			projectRoot = "";
 			targets = (
 				A2A4B8AD1858B25C00ABFF67 /* CMMSipad */,
-				A2A4B8CE1858B25C00ABFF67 /* CMMSipadTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1089,13 +1052,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A2A4B8CD1858B25C00ABFF67 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -1170,9 +1126,11 @@
 				A2A88DDB1887C0D500E198A0 /* NSDate+Helpers.m in Sources */,
 				A2A88DDF1887C0D500E198A0 /* PMPeriod.m in Sources */,
 				A2A5FC44189FE6750032F135 /* FileManager.m in Sources */,
+				A27E9DCA1A665CF4002E1754 /* HighlightClass.m in Sources */,
 				A2ABFCE11885332200D8D4E4 /* ActionTaskController.m in Sources */,
 				A2A88DDD1887C0D500E198A0 /* PMCalendarController.m in Sources */,
 				A2B01EA7185F34D9009A825C /* ReaderThumbFetch.m in Sources */,
+				A27E9DCB1A665CF4002E1754 /* note.m in Sources */,
 				A2A88DE31887C0D500E198A0 /* PMThemeShadow.m in Sources */,
 				A2CC23871871CED700568111 /* NoteAlertView.m in Sources */,
 				A2A4B8EB1858B46D00ABFF67 /* HomeViewController.m in Sources */,
@@ -1188,22 +1146,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A2A4B8CB1858B25C00ABFF67 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		A2A4B8D51858B25C00ABFF67 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = A2A4B8AD1858B25C00ABFF67 /* CMMSipad */;
-			targetProxy = A2A4B8D41858B25C00ABFF67 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		A29B73501860874600B86BF7 /* Localizable.strings */ = {
@@ -1272,6 +1215,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "fc3fe6fc-652e-4fdd-90bf-eb0b314c8448";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 2;
 				VALID_ARCHS = "armv7 ";
@@ -1307,6 +1251,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PROVISIONING_PROFILE = "fc3fe6fc-652e-4fdd-90bf-eb0b314c8448";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 2;
 				VALIDATE_PRODUCT = YES;
@@ -1317,6 +1262,7 @@
 		A2A4B8E11858B25C00ABFF67 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = CMMSipad.entitlements;
@@ -1335,8 +1281,10 @@
 					"$(inherited)",
 					/Users/dna/Desktop/CTSTest,
 				);
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = CMMSipad;
-				PROVISIONING_PROFILE = "1FD89A46-209A-4086-AF79-40DA78AC102F";
+				PROVISIONING_PROFILE = "fc3fe6fc-652e-4fdd-90bf-eb0b314c8448";
+				VALID_ARCHS = armv7;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1344,6 +1292,7 @@
 		A2A4B8E21858B25C00ABFF67 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = CMMSipad.entitlements;
@@ -1357,51 +1306,11 @@
 					"$(inherited)",
 					/Users/dna/Desktop/CTSTest,
 				);
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = CMMSipad;
-				PROVISIONING_PROFILE = "1FD89A46-209A-4086-AF79-40DA78AC102F";
+				PROVISIONING_PROFILE = "fc3fe6fc-652e-4fdd-90bf-eb0b314c8448";
+				VALID_ARCHS = armv7;
 				WRAPPER_EXTENSION = app;
-			};
-			name = Release;
-		};
-		A2A4B8E41858B25C00ABFF67 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/CTSTest.app/CTSTest";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "CTSTest/CTSTest-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = "CTSTestTests/CTSIpadTests-Info.plist";
-				PRODUCT_NAME = CMMSipadTests;
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = xctest;
-			};
-			name = Debug;
-		};
-		A2A4B8E51858B25C00ABFF67 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/CTSTest.app/CTSTest";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "CTSTest/CTSTest-Prefix.pch";
-				INFOPLIST_FILE = "CTSTestTests/CTSIpadTests-Info.plist";
-				PRODUCT_NAME = CMMSipadTests;
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = xctest;
 			};
 			name = Release;
 		};
@@ -1422,15 +1331,6 @@
 			buildConfigurations = (
 				A2A4B8E11858B25C00ABFF67 /* Debug */,
 				A2A4B8E21858B25C00ABFF67 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A2A4B8E31858B25C00ABFF67 /* Build configuration list for PBXNativeTarget "CMMSipadTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A2A4B8E41858B25C00ABFF67 /* Debug */,
-				A2A4B8E51858B25C00ABFF67 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

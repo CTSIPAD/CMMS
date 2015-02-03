@@ -118,15 +118,10 @@
     }
     else if([actionProperty.action isEqualToString:@"SendToPresident"]){
         [SVProgressHUD showWithStatus:NSLocalizedString(@"Alert.Send",@"Sending ...") maskType:SVProgressHUDMaskTypeBlack];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
 
         [_delegate send:actionProperty.action note:@""];
         [_delegate movehome:self];
-        dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD dismiss];
-        });
-    });
-
     }
 
     else{

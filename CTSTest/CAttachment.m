@@ -67,7 +67,10 @@
         mainDelegate.FileId = self.FileId;
         mainDelegate.FileUrl = self.FileUrl;
         mainDelegate.AttachmentId = self.AttachmentId;
-
+        [mainDelegate.IncomingNotes removeAllObjects];
+        [mainDelegate.IncomingHighlights removeAllObjects];
+        [mainDelegate.IncomingHighlights addObjectsFromArray:self.HighlightAnnotations];
+        [mainDelegate.IncomingNotes addObjectsFromArray:self.NoteAnnotations];
         //strUrl = [strUrl stringByReplacingOccurrencesOfString:@"\\" withString:@"%5C"];
 
         NSRange findit = [strUrl rangeOfString:@"%5C" options:NSBackwardsSearch];
@@ -87,6 +90,7 @@
 
         
         
+       //NSURL *url=[NSURL URLWithString:@"http://192.168.31.106:8081/IPAD_Files/0bfc4de9-64ad-4eb1-aa9e-eb63b030de5a%5C609237991.pdf"];
         NSURL *url=[NSURL URLWithString:strUrl];
 
         NSString *cachesDirectory = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];

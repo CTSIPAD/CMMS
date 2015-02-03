@@ -283,6 +283,7 @@ static NSString *CellIdentifier;
         [self TurnPageLeft];
         
     }
+    
 }
 
 -(void)TurnPageLeft{
