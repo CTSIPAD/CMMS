@@ -67,6 +67,8 @@
 @property (nonatomic, readwrite) CGPoint endLocation;
 @property (nonatomic,assign) PDFDocument *doc;
 @property (nonatomic,readwrite) BOOL zooming;
+@property(nonatomic,assign) NSInteger attachmentId;
+
 
 - (void) OnPrevPage;
 - (void) OnNextPage;

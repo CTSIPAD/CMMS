@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 
 @implementation AppDelegate
+@synthesize Highlights =_Highlights,Notes=_Notes,IncomingHighlights=_IncomingHighlights,IncomingNotes=_IncomingNotes;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -17,6 +18,8 @@
     [self.splitViewController setValue:[NSNumber numberWithFloat:256.0] forKey:@"_masterColumnWidth"];
     self.splitViewController.view.backgroundColor = [UIColor grayColor];
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+    self.Highlights=[[NSMutableArray alloc]init];
+    self.Notes=[[NSMutableArray alloc]init];
     return YES;
 }
 

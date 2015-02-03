@@ -11,14 +11,72 @@
 #import "CUser.h"
 #import "CParser.h"
 #import "CFPendingAction.h"
+#import "HighlightClass.h"
+#import "note.h"
 @implementation PDFView{
     BOOL isZooming;
     AppDelegate *mainDelegate;
+    CGPoint XH,YH,ZH;
+
 }
 @synthesize  startLocation,endLocation,annotationSignHeight,annotationSignWidth,DocumentPagesNb,FreeSignAll,doc;
 - (void)initPDFDoc:(PDFDocument*) pdoc
 {
+    mainDelegate=(AppDelegate*)[[UIApplication sharedApplication] delegate];
 	m_pDocument = pdoc;
+    for(HighlightClass* obj in mainDelegate.IncomingHighlights)
+        
+    {
+        
+        
+        CGPoint ptLeftTop;
+        
+        CGPoint ptRightBottom;
+        
+        
+        
+        ptLeftTop.x=obj.abscissa;
+        
+        ptLeftTop.y=obj.ordinate;
+        
+        ptRightBottom.x=obj.x1;
+        
+        ptRightBottom.y=obj.y1;
+        
+        
+        
+        m_pageIndex=obj.PageNb;
+        
+        m_curPage = [m_pDocument getPDFPage:m_pageIndex];
+        
+        [m_pDocument setCurPage:m_curPage];
+        
+        [m_pDocument AddHighlightAnnot:ptLeftTop secondPoint:ptRightBottom previousPoint:ptLeftTop];
+        [obj setIndex:[mainDelegate.IncomingHighlights indexOfObject:obj]];
+        
+        
+    }
+    for(note *notee in mainDelegate.IncomingNotes)
+        
+    {
+        
+        
+        CGPoint ptLeftTop;
+        
+        ptLeftTop.x=notee.abscissa;
+        
+        ptLeftTop.y=notee.ordinate;
+        
+        m_pageIndex=notee.PageNb;
+        
+        m_curPage = [m_pDocument getPDFPage:m_pageIndex];
+        
+        [m_pDocument setCurPage:m_curPage];
+        
+        [m_pDocument AddNote:ptLeftTop secondPoint:ptLeftTop note:notee.note];
+        
+        
+    }
     m_pageIndex = 0;
     m_zoomLevel = 100;
     
@@ -92,6 +150,8 @@
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    mainDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
 	CGPoint pt = [[touches anyObject] locationInView:self];
 	
 	//[[self superview] bringSubviewToFront:self];
@@ -114,7 +174,54 @@
     CGPoint ptRightBottom=[self DeviceToPagePoint:m_curPage p1:CGPointMake(endLocation.x, endLocation.y)];
     //   CGPoint devicePt= [cView PageToDevicePoint:m_curPage p1:pt];
     //CGPoint p2=CGPointMake(ptLeftTop.x+30,ptLeftTop.y- 30);
-   
+    if([self btnHighlight]==YES){
+        
+        HighlightClass* obj=[[HighlightClass alloc]initWithName:ptLeftTop.x ordinate:ptLeftTop.y height:ptRightBottom.x width:ptRightBottom.y PageNb:m_pageIndex AttachmentId:self.attachmentId];
+        [mainDelegate.Highlights addObject:obj];
+        [doc deleteAllAnnot];
+        FPDF_PAGE temppage=m_curPage;
+        
+        for(HighlightClass* obj in mainDelegate.IncomingHighlights){
+            XH=CGPointMake(obj.abscissa, obj.ordinate);
+            YH=CGPointMake(obj.x1, obj.y1);
+            m_curPage=[m_pDocument getPDFPage:obj.PageNb];
+            [m_pDocument setCurPage:m_curPage];
+            [obj setIndex:[mainDelegate.IncomingHighlights indexOfObject:obj]];
+            
+            [m_pDocument AddHighlightAnnot:XH secondPoint:YH previousPoint:ZH];
+        }
+        
+        for(HighlightClass* obj in mainDelegate.Highlights){
+            XH=CGPointMake(obj.abscissa, obj.ordinate);
+            YH=CGPointMake(obj.x1, obj.y1);
+            m_curPage=[m_pDocument getPDFPage:obj.PageNb];
+            [m_pDocument setCurPage:m_curPage];
+            
+            if(![obj.status isEqualToString:@"DELETE"]){
+                [obj setIndex:([mainDelegate.Highlights indexOfObject:obj]+[mainDelegate.IncomingHighlights count])];
+                [m_pDocument AddHighlightAnnot:XH secondPoint:YH previousPoint:ZH];
+            }
+        }
+        for(note* obj in mainDelegate.Notes){
+            CGPoint point=CGPointMake(obj.abscissa, obj.ordinate);
+            m_curPage=[m_pDocument getPDFPage:obj.PageNb];
+            [m_pDocument setCurPage:m_curPage];
+            if(![obj.status isEqualToString:@"DELETE"])
+                [m_pDocument AddNote:point secondPoint:point  note:obj.note];
+        }
+
+        
+        for(note* obj in mainDelegate.IncomingNotes){
+            CGPoint point=CGPointMake(obj.abscissa, obj.ordinate);
+            m_curPage=[m_pDocument getPDFPage:obj.PageNb];
+            [m_pDocument setCurPage:m_curPage];
+            [m_pDocument AddNote:point secondPoint:point  note:obj.note];
+        }
+        [m_pDocument setCurPage:temppage];
+        
+        
+	}
+    else
     if ([self btnErase]) {
         [m_pDocument eraseAnnotation:startLoc secondPoint:ptLeftTop];
     }else
@@ -122,7 +229,6 @@
         //jis signmultiple
         self.btnSign=NO;
            // [m_pDocument AddStampAnnot:ptLeftTop secondPoint:ptRightBottom previousPoint:ptLeftTop];
-        mainDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         
         NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
         float xposition = startLoc.x;
@@ -191,9 +297,12 @@
         self.btnErase=FALSE;
         //[m_pdfDoc AddNote:pt  note:[cView annotationNoteMsg]];
        	[m_pDocument AddNote:ptLeftTop secondPoint:ptRightBottom note:[self annotationNoteMsg]];
+        note* noteObj=[[note alloc]initWithName:ptLeftTop.x ordinate:ptLeftTop.y note:[self annotationNoteMsg] PageNb:m_pageIndex AttachmentId:self.attachmentId];
+        [mainDelegate.Notes addObject:noteObj];
        
     }if([self btnHighlight])
     {
+        
     }else
         if ([self btnNote]){
             self.btnNote =FALSE;

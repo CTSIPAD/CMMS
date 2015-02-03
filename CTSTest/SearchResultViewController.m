@@ -368,6 +368,10 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    mainDelegate.IncomingNotes=[[NSMutableArray alloc]init];
+    mainDelegate.IncomingHighlights=[[NSMutableArray alloc]init];
+    mainDelegate.Highlights=[[NSMutableArray alloc]init];
+    mainDelegate.Notes=[[NSMutableArray alloc]init];
     [self performSelectorOnMainThread:@selector(increaseProgress) withObject:@"" waitUntilDone:YES];
     //[SVProgressHUD showWithStatus:NSLocalizedString(@"Alert.Loading",@"Loading ...") maskType:SVProgressHUDMaskTypeBlack];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
@@ -400,7 +404,7 @@
                     
                     mainDelegate.corresponenceId = correspondence.Id;
                     mainDelegate.transferId = correspondence.TransferId;
-
+        
                     NSString* attachmentUrl = [NSString stringWithFormat:@"http://%@?action=GetAttachments&token=%@&docId=%@",serverUrl,mainDelegate.user.token,correspondence.Id];
                     
                     NSURL *xmlUrl = [NSURL URLWithString:attachmentUrl];

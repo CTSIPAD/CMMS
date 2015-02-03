@@ -49,4 +49,8 @@
 @property (strong,nonatomic) NSString* inboxId;
 @property (strong,nonatomic) NSString* transferId;
 @property (retain,nonatomic) NSMutableArray* folderNames;
+@property (retain,nonatomic) NSMutableArray* Highlights;
+@property (retain,nonatomic) NSMutableArray* Notes;
+@property (retain,nonatomic) NSMutableArray* IncomingHighlights;
+@property (retain,nonatomic) NSMutableArray* IncomingNotes;
 @end

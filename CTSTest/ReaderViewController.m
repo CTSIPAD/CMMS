@@ -39,6 +39,8 @@
 #import "NewActionTableViewController.h"
 #import "AcceptWithCommentViewController.h"
 #import "CAction.h"
+#import "note.h"
+#import "HighlightClass.h"
 //#import "SVProgressHUD.h"
 
 @interface ReaderViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, MFMailComposeViewControllerDelegate,
@@ -1548,7 +1550,6 @@ ReaderMainToolbarDelegate, ReaderMainPagebarDelegate, ReaderContentViewDelegate,
         
         
         [userTemp processSingleAction:pa];
-        if([self uploadXml:correspondence.Id]){
             if(self.menuId !=100)
                 [((CMenu*)mainDelegate.user.menu[self.menuId]).correspondenceList removeObjectAtIndex:self.correspondenceId];
             
@@ -1577,7 +1578,7 @@ ReaderMainToolbarDelegate, ReaderMainPagebarDelegate, ReaderContentViewDelegate,
             }
             // Dismiss the ReaderViewController
             
-        }
+        
         
     }
     @catch (NSException *ex) {
@@ -1587,153 +1588,259 @@ ReaderMainToolbarDelegate, ReaderMainPagebarDelegate, ReaderContentViewDelegate,
     
 }
 
+//
+//-(BOOL)uploadXml:(NSString*) docId{
+//    
+//    BOOL isPerformed;
+//    @try{
+//        
+//        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+//                                                             NSUserDomainMask, YES);
+//        NSString *documentsDirectory = [paths objectAtIndex:0];
+//        NSString *documentsPath = [documentsDirectory
+//                                   stringByAppendingPathComponent:@"annotations.xml"];
+//        NSLog(@"%@",documentsPath);
+//        
+//        NSLog(@"Saving xml data to %@...", documentsPath);
+//        
+//        NSData *imageData= [NSData dataWithContentsOfFile:documentsPath] ;
+//        // setting up the URL to post to
+//        
+//        NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
+//        NSString* urlString = [NSString stringWithFormat:@"http://%@",serverUrl];
+//        
+//        // setting up the request object now
+//        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+//        [request setURL:[NSURL URLWithString:urlString]];
+//        [request setHTTPMethod:@"POST"];
+//        
+//        
+//        NSString *boundary = @"---------------------------14737809831466499882746641449";
+//        NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
+//        [request addValue:contentType forHTTPHeaderField: @"Content-Type"];
+//        
+//        NSMutableData *body = [NSMutableData data];
+//        
+//        // action parameter
+//        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+//        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"action\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+//        [body appendData:[@"UpdateDocument" dataUsingEncoding:NSUTF8StringEncoding]];
+//        [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+//        
+//        
+//        
+//        // file
+//        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+//        [body appendData:[@"Content-Disposition: form-data; name=\"userfile\"; filename=\".xml\"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+//        [body appendData:[@"Content-Type: application/octet-stream\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+//        [body appendData:[NSData dataWithData:imageData]];
+//        [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+//        
+//        // text parameter
+//        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+//        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"correspondenceId\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+//        [body appendData:[docId dataUsingEncoding:NSUTF8StringEncoding]];
+//        [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+//        
+//        
+//        // close form
+//        [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+//        
+//        // set request body
+//        [request setHTTPBody:body];
+//        
+//        NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+//        
+//        NSString *validationResult=[CParser ValidateWithData:returnData];
+//        if(![validationResult isEqualToString:@"OK"]){
+//            
+//            if([validationResult isEqualToString:@"Cannot access to the server"]){
+//                isPerformed=YES;
+//                CCorrespondence *correspondence;
+//                if(self.menuId!=100){
+//                    correspondence= ((CMenu*)mainDelegate.user.menu[self.menuId]).correspondenceList[self.correspondenceId];
+//                }else{
+//                    correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
+//                }
+//                NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
+//                
+//                
+//                if (correspondence.attachmentsList.count>0)
+//                {
+//                    for(CAttachment* doc in correspondence.attachmentsList)
+//                    {
+//                        if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
+//                            [thumbnailrarray addObject:doc];
+//                        }
+//                        
+//                        
+//                    }
+//                }
+//                
+//                CAttachment *attachment=thumbnailrarray[self.attachmentId];
+//                
+//                NSData* annotData= [NSData dataWithContentsOfFile:attachment.tempPdfLocation];
+//                [Base64 initialize];
+//                NSString *annotString64=[Base64 encode:annotData];
+//                NSError *error;
+//                NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+//                                                                     NSUserDomainMask, YES);
+//                NSString *documentsDirectory = [paths objectAtIndex:0];
+//                NSString *documentsPath = [documentsDirectory
+//                                           stringByAppendingPathComponent:@"pending.xml"];
+//                
+//                NSData *xmlData = [[NSMutableData alloc] initWithContentsOfFile:documentsPath];
+//                
+//                GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:xmlData
+//                                         
+//                                                                       options:0 error:&error];
+//                
+//                GDataXMLElement* rootEl  = [doc rootElement];
+//                
+//                if(rootEl==nil){
+//                    rootEl =[GDataXMLNode elementWithName:@"Documents" stringValue:@""];
+//                    
+//                }
+//                
+//                GDataXMLElement * docEl=[GDataXMLNode elementWithName:@"Document" stringValue:@""];
+//                
+//                GDataXMLElement *correspondenceIdEl=[GDataXMLNode elementWithName:@"CorrespondenceId" stringValue:correspondence.Id];
+//                [docEl addChild:correspondenceIdEl];
+//                GDataXMLElement *docIdEl=[GDataXMLNode elementWithName:@"DocId" stringValue:attachment.docId];
+//                [docEl addChild:docIdEl];
+//                GDataXMLElement *urlEl=[GDataXMLNode elementWithName:@"Url" stringValue:attachment.url];
+//                [docEl addChild:urlEl];
+//                GDataXMLElement *contentEl=[GDataXMLNode elementWithName:@"Content" stringValue:annotString64];
+//                [docEl addChild:contentEl];
+//                [rootEl addChild:docEl];
+//                
+//                
+//                GDataXMLDocument *document2 = [[GDataXMLDocument alloc]
+//                                               initWithRootElement:rootEl] ;
+//                NSData *xmlData2 = document2.XMLData;
+//                
+//                NSLog(@"Saving xml data to %@...", documentsPath);
+//                [xmlData2 writeToFile:documentsPath atomically:YES];
+//                
+//                
+//            }
+//            else{ isPerformed=NO;
+//                [self ShowMessage:validationResult];
+//            }
+//        }
+//        else
+//        {
+//            
+//            isPerformed=YES;
+//            [mainDelegate.Highlights removeAllObjects];
+//            [mainDelegate.Notes removeAllObjects];
+//        }
+//    }
+//    @catch (NSException *ex) {
+//        [FileManager appendToLogView:@"ReaderViewController" function:@"uploadXml" ExceptionTitle:[ex name] exceptionReason:[ex reason]];
+//    }
+//	return isPerformed;
+//}
 
--(BOOL)uploadXml:(NSString*) docId{
+-(void)uploadXml:(NSString*) docId{
     
-    BOOL isPerformed;
     @try{
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
-                                                             NSUserDomainMask, YES);
-        NSString *documentsDirectory = [paths objectAtIndex:0];
-        NSString *documentsPath = [documentsDirectory
-                                   stringByAppendingPathComponent:@"annotations.xml"];
-        NSLog(@"%@",documentsPath);
+        if (mainDelegate==nil) mainDelegate=(AppDelegate*)[[UIApplication sharedApplication] delegate];
         
-        NSLog(@"Saving xml data to %@...", documentsPath);
-        
-        NSData *imageData= [NSData dataWithContentsOfFile:documentsPath] ;
-        // setting up the URL to post to
-        
-        NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
-        NSString* urlString = [NSString stringWithFormat:@"http://%@",serverUrl];
-        
-        // setting up the request object now
-        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-        [request setURL:[NSURL URLWithString:urlString]];
-        [request setHTTPMethod:@"POST"];
-        
-        
-        NSString *boundary = @"---------------------------14737809831466499882746641449";
-        NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
-        [request addValue:contentType forHTTPHeaderField: @"Content-Type"];
-        
-        NSMutableData *body = [NSMutableData data];
-        
-        // action parameter
-        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"action\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:[@"UpdateDocument" dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-        
-        
-        
-        // file
-        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:[@"Content-Disposition: form-data; name=\"userfile\"; filename=\".xml\"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:[@"Content-Type: application/octet-stream\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:[NSData dataWithData:imageData]];
-        [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-        
-        // text parameter
-        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"correspondenceId\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:[docId dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-        
-        
-        // close form
-        [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-        
-        // set request body
-        [request setHTTPBody:body];
-        
-        NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
-        
-        NSString *validationResult=[CParser ValidateWithData:returnData];
-        if(![validationResult isEqualToString:@"OK"]){
+        [SVProgressHUD showWithStatus:NSLocalizedString(@"Alert.Saving",@"Saving ...") maskType:SVProgressHUDMaskTypeBlack];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
             
-            if([validationResult isEqualToString:@"Cannot access to the server"]){
-                isPerformed=YES;
-                CCorrespondence *correspondence;
-                if(self.menuId!=100){
-                    correspondence= ((CMenu*)mainDelegate.user.menu[self.menuId]).correspondenceList[self.correspondenceId];
-                }else{
-                    correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
-                }
-                NSMutableArray* thumbnailrarray = [[NSMutableArray alloc] init];
-                
-                
-                if (correspondence.attachmentsList.count>0)
-                {
-                    for(CAttachment* doc in correspondence.attachmentsList)
-                    {
-                        if([doc.FolderName isEqualToString:mainDelegate.FolderName]){
-                            [thumbnailrarray addObject:doc];
-                        }
-                        
-                        
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                                 NSUserDomainMask, YES);
+            NSString *documentsDirectory = [paths objectAtIndex:0];
+            NSString *documentsPath = [documentsDirectory
+                                       stringByAppendingPathComponent:@"annotations.xml"];
+            NSLog(@"%@",documentsPath);
+            
+            NSLog(@"Saving xml data to %@...", documentsPath);
+            
+            NSData *imageData= [NSData dataWithContentsOfFile:documentsPath] ;
+            // setting up the URL to post to
+            
+            NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
+            NSString* urlString = [NSString stringWithFormat:@"http://%@",serverUrl];
+            
+            // setting up the request object now
+            NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+            [request setURL:[NSURL URLWithString:urlString]];
+            [request setHTTPMethod:@"POST"];
+            
+            
+            NSString *boundary = @"---------------------------14737809831466499882746641449";
+            NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
+            [request addValue:contentType forHTTPHeaderField: @"Content-Type"];
+            
+            NSMutableData *body = [NSMutableData data];
+            
+            // action parameter
+            [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"action\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:[@"SaveAnnotations" dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+            
+            
+            
+            // file
+            [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:[@"Content-Disposition: form-data; name=\"annotations\"; filename=\".xml\"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:[@"Content-Type: application/octet-stream\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:[NSData dataWithData:imageData]];
+            [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+            
+            // text parameter
+            [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"correspondenceId\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:[docId dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+            
+            //token parameter
+            [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"token\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:[mainDelegate.user.token dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+            
+            // close form
+            [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+            
+            // set request body
+            [request setHTTPBody:body];
+            
+            NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [SVProgressHUD dismiss];
+                NSString *validationResult=[CParser ValidateWithData:returnData];
+                if (mainDelegate==nil) mainDelegate=(AppDelegate*)[[UIApplication sharedApplication] delegate];
+                if(![validationResult isEqualToString:@"OK"]){
+                    
+                    if([validationResult isEqualToString:@"Cannot access to the server"]){
+                        [self ShowMessage:validationResult];
                     }
-                }
-                
-                CAttachment *attachment=thumbnailrarray[self.attachmentId];
-                
-                NSData* annotData= [NSData dataWithContentsOfFile:attachment.tempPdfLocation];
-                [Base64 initialize];
-                NSString *annotString64=[Base64 encode:annotData];
-                NSError *error;
-                NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
-                                                                     NSUserDomainMask, YES);
-                NSString *documentsDirectory = [paths objectAtIndex:0];
-                NSString *documentsPath = [documentsDirectory
-                                           stringByAppendingPathComponent:@"pending.xml"];
-                
-                NSData *xmlData = [[NSMutableData alloc] initWithContentsOfFile:documentsPath];
-                
-                GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:xmlData
-                                         
-                                                                       options:0 error:&error];
-                
-                GDataXMLElement* rootEl  = [doc rootElement];
-                
-                if(rootEl==nil){
-                    rootEl =[GDataXMLNode elementWithName:@"Documents" stringValue:@""];
+                    else{
+                        [self ShowMessage:validationResult];
+                    }
+                }else{
+                    [self ShowMessage:@"Saved Successfully"];
+                    mainDelegate.isAnnotated=NO;
+                    
+                    //[self deleteCachedFiles];
                     
                 }
                 
-                GDataXMLElement * docEl=[GDataXMLNode elementWithName:@"Document" stringValue:@""];
                 
-                GDataXMLElement *correspondenceIdEl=[GDataXMLNode elementWithName:@"CorrespondenceId" stringValue:correspondence.Id];
-                [docEl addChild:correspondenceIdEl];
-                GDataXMLElement *docIdEl=[GDataXMLNode elementWithName:@"DocId" stringValue:attachment.docId];
-                [docEl addChild:docIdEl];
-                GDataXMLElement *urlEl=[GDataXMLNode elementWithName:@"Url" stringValue:attachment.url];
-                [docEl addChild:urlEl];
-                GDataXMLElement *contentEl=[GDataXMLNode elementWithName:@"Content" stringValue:annotString64];
-                [docEl addChild:contentEl];
-                [rootEl addChild:docEl];
-                
-                
-                GDataXMLDocument *document2 = [[GDataXMLDocument alloc]
-                                               initWithRootElement:rootEl] ;
-                NSData *xmlData2 = document2.XMLData;
-                
-                NSLog(@"Saving xml data to %@...", documentsPath);
-                [xmlData2 writeToFile:documentsPath atomically:YES];
-                
-                
-            }
-            else{ isPerformed=NO;
-                [self ShowMessage:validationResult];
-            }
-        }
-        else{isPerformed=YES;}
+            });
+            
+        });
     }
     @catch (NSException *ex) {
+        [SVProgressHUD dismiss];
         [FileManager appendToLogView:@"ReaderViewController" function:@"uploadXml" ExceptionTitle:[ex name] exceptionReason:[ex reason]];
     }
-	return isPerformed;
 }
-
 -(void)ShowMessage:(NSString*)message{
     
     NSString *msg = message;
@@ -1774,6 +1881,14 @@ typedef enum{
 } AnnotationsType;
 -(void)performaAnnotation:(int)annotation{
     @try{
+        CCorrespondence *correspondence;
+        if(self.menuId!=100){
+            correspondence= ((CMenu*)mainDelegate.user.menu[self.menuId]).correspondenceList[self.correspondenceId];
+        }else{
+            correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
+        }
+        CAttachment *fileToOpen=correspondence.attachmentsList[self.attachmentId];
+        [m_pdfview setAttachmentId:fileToOpen.AttachmentId.intValue];
         [self.notePopController dismissPopoverAnimated:YES];
         switch (annotation) {
             case Highlight:
@@ -1789,12 +1904,19 @@ typedef enum{
                 [m_pdfview setBtnHighlight:NO];
                 [m_pdfview setBtnNote:NO];
                 [m_pdfview setBtnSign:YES];
+                [m_pdfview setBtnErase:NO];
+
                 UIAlertView *alertOk=[[UIAlertView alloc]initWithTitle:NSLocalizedString(@"Info",@"Info") message:NSLocalizedString(@"Alert.Sign",@"Click on pdf document to sign") delegate:self cancelButtonTitle:NSLocalizedString(@"OK",@"OK") otherButtonTitles: nil];
                 [alertOk show];
                 
             }
                 break;
             case Note:{
+                [m_pdfview setBtnErase:NO];
+                [m_pdfview setBtnSign:NO];
+                [m_pdfview setBtnNote:YES];
+                [m_pdfview setBtnHighlight:NO];
+
                 mainDelegate.isAnnotated=YES;
                 NoteAlertView *noteView = [[NoteAlertView alloc] initWithFrame:CGRectMake(0, 300, 400, 250) fromComment:NO];
                 noteView.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -1890,7 +2012,15 @@ typedef enum{
 -(void)saveAnnotation
 {
     mainDelegate.isAnnotated=NO;
+//   if(mainDelegate.Highlights.count==0&&mainDelegate.Notes.count==0){
+//            [self ShowMessage:NSLocalizedString(@"NothingToSave", @"nothing to save")];
+//            [self dismiss];
+//            return;
+//        }
     @try {
+        [SVProgressHUD showWithStatus:NSLocalizedString(@"Alert.Processing",@"Processing ...") maskType:SVProgressHUDMaskTypeBlack];
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         CCorrespondence *correspondence;
         if(self.menuId!=100){
             correspondence= ((CMenu*)mainDelegate.user.menu[self.menuId]).correspondenceList[self.correspondenceId];
@@ -1911,95 +2041,94 @@ typedef enum{
                 
             }
         }
-        
+        [mainDelegate.Notes addObjectsFromArray:mainDelegate.IncomingNotes];
+        [mainDelegate.Highlights addObjectsFromArray:mainDelegate.IncomingHighlights];
         CAttachment *attachment=thumbnailrarray[self.attachmentId];
         //  mainDelegate.AnnotationSaved=YES;
-        NSString* dir  = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
-        NSString* path = [dir stringByAppendingString:@"/FoxitSaveAnnotation.pdf"];
-        
-        
-        NSData* annotData= [NSData dataWithContentsOfFile:path];
-        [Base64 initialize];
-        NSString *annotString64=[Base64 encode:annotData];
+
         NSError *error;
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                              NSUserDomainMask, YES);
-        NSString *documentsDirectory = [paths objectAtIndex:0];
-        NSString *documentsPath = [documentsDirectory
-                                   stringByAppendingPathComponent:@"annotations.xml"];
         
-        NSData *xmlData = [[NSMutableData alloc] initWithContentsOfFile:documentsPath];
-        
-        GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:xmlData
-                                 
-                                                               options:0 error:&error];
-        BOOL isFound=NO;
-        GDataXMLElement* rootEl  = [doc rootElement];
-    	
-        if(rootEl==nil){
-            rootEl =[GDataXMLNode elementWithName:@"Documents" stringValue:@""];
+            NSString *documentsDirectory = [paths objectAtIndex:0];
+            NSString *documentsPath = [documentsDirectory stringByAppendingPathComponent:@"annotations.xml"];
+            GDataXMLElement* rootEl =[GDataXMLNode elementWithName:@"Annotations" stringValue:@""];
+            if(mainDelegate.Notes.count>0 || mainDelegate.Highlights.count>0){
+                GDataXMLElement *Height=[GDataXMLNode elementWithName:@"Height" stringValue:[NSString stringWithFormat:@"%f",[m_pdfview getHeight]]];
+                GDataXMLElement *Width=[GDataXMLNode elementWithName:@"Width" stringValue:[NSString stringWithFormat:@"%f",[m_pdfview getWidth]]];
+                GDataXMLElement * pageinfo=[GDataXMLNode elementWithName:@"PageInfo" stringValue:@""];
+                GDataXMLElement * Size=[GDataXMLNode elementWithName:@"Size" stringValue:@""];
+                
+                
+                [Size addChild:Height];
+                [Size addChild:Width];
+                [pageinfo addChild:Size];
+                [rootEl addChild:pageinfo];}
             
-        }
-        
-        NSArray *allDocuments=[rootEl elementsForName:@"Document"];
-        GDataXMLElement *docEl;
-        if(allDocuments.count>0){
-            for(docEl in allDocuments){
+            GDataXMLElement * NotesEl=[GDataXMLNode elementWithName:@"Notes" stringValue:@""];
+            GDataXMLElement * HighlightsEl=[GDataXMLNode elementWithName:@"Highlights" stringValue:@""];
+            for(note* note in mainDelegate.Notes){
+                GDataXMLElement *docEl=[GDataXMLNode elementWithName:@"Note" stringValue:@""];
+                GDataXMLElement* noteAttribute=[GDataXMLElement attributeWithName:@"status" stringValue:note.status];
+                [docEl addAttribute:noteAttribute];
+                GDataXMLElement *AttachmentId=[GDataXMLNode elementWithName:@"AttachmentId" stringValue:[NSString stringWithFormat:@"%d",note.AttachmentId]];
+                [docEl addChild:AttachmentId];
                 
-                NSArray *correspondenceIds=[docEl elementsForName:@"CorrespondenceId"];
-                GDataXMLElement *correspondenceIdEl=[correspondenceIds objectAtIndex:0];
+                GDataXMLElement *pgnb=[GDataXMLNode elementWithName:@"page" stringValue:[NSString stringWithFormat:@"%d",note.PageNb]];
+                [docEl addChild:pgnb];
                 
-                NSArray *docIds=[docEl elementsForName:@"DocId"];
-                GDataXMLElement *docIdEl=[docIds objectAtIndex:0];
+                GDataXMLElement *x=[GDataXMLNode elementWithName:@"noteX" stringValue:[NSString stringWithFormat:@"%f",note.abscissa]];
+                [docEl addChild:x];
                 
-                if([correspondenceIdEl.stringValue isEqualToString:correspondence.Id] && [docIdEl.stringValue isEqualToString:attachment.docId]){
-                    isFound=YES;
-                    NSArray *contents=[docEl elementsForName:@"Content"];
-                    GDataXMLElement *contentEl;
-                    if(contents.count>0){
-                        contentEl=[contents objectAtIndex:0];
-                        contentEl.stringValue=annotString64;
-                    }
-                }
+                GDataXMLElement *y=[GDataXMLNode elementWithName:@"noteY" stringValue:[NSString stringWithFormat:@"%f",note.ordinate]];
+                [docEl addChild:y];
                 
+                GDataXMLElement *notee=[GDataXMLNode elementWithName:@"noteMSG" stringValue:note.note];
+                [docEl addChild:notee];
+                
+                [NotesEl addChild:docEl];
                 
             }
+            for(HighlightClass* obj in mainDelegate.Highlights){
+                GDataXMLElement *docEl=[GDataXMLNode elementWithName:@"Highlight" stringValue:@""];
+                GDataXMLElement* highlightAttribute=[GDataXMLElement attributeWithName:@"status" stringValue:obj.status];
+                [docEl addAttribute:highlightAttribute];
+                GDataXMLElement *pgnb=[GDataXMLNode elementWithName:@"page" stringValue:[NSString stringWithFormat:@"%d",obj.PageNb]];
+                [docEl addChild:pgnb];
+                
+                GDataXMLElement *AttachmentId=[GDataXMLNode elementWithName:@"AttachmentId" stringValue:[NSString stringWithFormat:@"%d",obj.AttachmentId]];
+                [docEl addChild:AttachmentId];
+                GDataXMLElement *x=[GDataXMLNode elementWithName:@"HighlightX1" stringValue:[NSString stringWithFormat:@"%f",obj.abscissa]];
+                [docEl addChild:x];
+                
+                GDataXMLElement *y=[GDataXMLNode elementWithName:@"HighlightY1" stringValue:[NSString stringWithFormat:@"%f",obj.ordinate]];
+                [docEl addChild:y];
+                
+                GDataXMLElement *x1=[GDataXMLNode elementWithName:@"HighlightX2" stringValue:[NSString stringWithFormat:@"%f",obj.x1]];
+                [docEl addChild:x1];
+                
+                GDataXMLElement *y1=[GDataXMLNode elementWithName:@"HighlightY2" stringValue:[NSString stringWithFormat:@"%f",obj.y1]];
+                [docEl addChild:y1];
+                [HighlightsEl addChild:docEl];
+                
+            }
+            [rootEl addChild:NotesEl];
+            [rootEl addChild:HighlightsEl];
             
-        }
-        
-        if(isFound==NO){
-            docEl=[GDataXMLNode elementWithName:@"Document" stringValue:@""];
+            GDataXMLDocument *document2 = [[GDataXMLDocument alloc] initWithRootElement:rootEl] ;
             
-            GDataXMLElement *correspondenceIdEl=[GDataXMLNode elementWithName:@"CorrespondenceId" stringValue:correspondence.Id];
-            [docEl addChild:correspondenceIdEl];
-            GDataXMLElement *docIdEl=[GDataXMLNode elementWithName:@"DocId" stringValue:attachment.docId];
-            [docEl addChild:docIdEl];
-            GDataXMLElement *urlEl=[GDataXMLNode elementWithName:@"Url" stringValue:attachment.url];
-            [docEl addChild:urlEl];
-            GDataXMLElement *contentEl=[GDataXMLNode elementWithName:@"Content" stringValue:annotString64];
-            [docEl addChild:contentEl];
-            [rootEl addChild:docEl];
-        }
+            NSData *xmlData2 = document2.XMLData;
+            
+            [xmlData2 writeToFile:documentsPath atomically:YES];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self uploadXml:correspondence.Id];
+                //[SVProgressHUD dismiss];
+                //                [mainDelegate.Highlights removeAllObjects];
+                //                [mainDelegate.Notes removeAllObjects];
+                
+            });
+        });
         
-        GDataXMLDocument *document2 = [[GDataXMLDocument alloc]
-                                       initWithRootElement:rootEl] ;
-        NSData *xmlData2 = document2.XMLData;
-        
-        NSLog(@"Saving xml data to %@...", documentsPath);
-        [xmlData2 writeToFile:documentsPath atomically:YES];
-        
-        
-        
-        NSFileManager* fileManager=[NSFileManager defaultManager];
-        // NSError *cpError;
-        // [fileManager removeItemAtPath:self.filePath error:nil];
-        // [fileManager copyItemAtPath:path toPath:self.filePath error:&cpError];
-        //  NSLog(@"%@",cpError);
-        
-        if ( [[NSFileManager defaultManager] isReadableFileAtPath:path] ){
-            [fileManager removeItemAtPath:attachment.tempPdfLocation error:nil];
-            [[NSFileManager defaultManager] copyItemAtPath:path toPath:attachment.tempPdfLocation error:nil];
-        }
     }
     @catch (NSException *ex) {
         [FileManager appendToLogView:@"ReaderViewController" function:@"saveAnnotation" ExceptionTitle:[ex name] exceptionReason:[ex reason]];
@@ -2601,11 +2730,21 @@ typedef enum{
             // [cview setAnnotationNoteMsg:[alertView textFieldAtIndex:0].text];
             
         }
+        
+
         if(alertView.tag==TAG_SAVE){
             [m_pdfview setBtnHighlight:NO];
             [m_pdfview setBtnNote:NO];
             [m_pdfview setBtnSign:NO];
             [m_pdfview setBtnErase:NO];
+            CCorrespondence *correspondence;
+            if(self.menuId!=100){
+                correspondence= ((CMenu*)mainDelegate.user.menu[self.menuId]).correspondenceList[self.correspondenceId];
+            }else{
+                correspondence=mainDelegate.searchModule.correspondenceList[self.correspondenceId];
+            }
+            CAttachment *fileToOpen=correspondence.attachmentsList[self.attachmentId];
+            [m_pdfview setAttachmentId:fileToOpen.AttachmentId.intValue];
             [self saveAnnotation];
         }
         else{

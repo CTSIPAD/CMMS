@@ -18,6 +18,8 @@
 "YES"="YES";
 "NO"="NO";
 "Alert.Downloading"="Downloading";
+"Alert.Saving"="Saving..";
+
 "Login.Licence"="License Key";
 "Login"="Login";
 "Menu.Home"="Home";

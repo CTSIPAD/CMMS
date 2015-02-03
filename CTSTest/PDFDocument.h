@@ -14,6 +14,7 @@
     const char* m_pfilepath;
 	//Page count of PDF.
     FS_INT32 m_pageCount;
+    BOOL foundNote;
 	//A buffer allocated by application to set extra memory to SDK.
     void  * m_pBuffer;  
 	//A custom way to read file.
@@ -75,5 +76,6 @@
 - (void)AddStampAnnot:(CGPoint)ptLeftTop secondPoint:(CGPoint)ptRightBottom previousPoint:(CGPoint)previousPoint;
 -(void)AddNote:(CGPoint)pt1 secondPoint:(CGPoint)pt2 note:(NSString*)msg;
 -(void)extractText:(CGPoint)point;
-- (void)eraseAnnotation:(CGPoint)pt1 secondPoint:(CGPoint)pt2; 
+- (void)eraseAnnotation:(CGPoint)pt1 secondPoint:(CGPoint)pt2;
+- (void)deleteAllAnnot;
 @end

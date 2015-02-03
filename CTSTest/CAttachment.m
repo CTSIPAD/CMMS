@@ -67,7 +67,10 @@
         mainDelegate.FileId = self.FileId;
         mainDelegate.FileUrl = self.FileUrl;
         mainDelegate.AttachmentId = self.AttachmentId;
-
+        [mainDelegate.IncomingNotes removeAllObjects];
+        [mainDelegate.IncomingHighlights removeAllObjects];
+        [mainDelegate.IncomingHighlights addObjectsFromArray:self.HighlightAnnotations];
+        [mainDelegate.IncomingNotes addObjectsFromArray:self.NoteAnnotations];
         //strUrl = [strUrl stringByReplacingOccurrencesOfString:@"\\" withString:@"%5C"];
 
         NSRange findit = [strUrl rangeOfString:@"%5C" options:NSBackwardsSearch];

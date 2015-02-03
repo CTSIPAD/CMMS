@@ -270,6 +270,8 @@ vm_size_t freeMemory(void) {
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath  {
     //[self logMemUsage];
     @try{
+        [mainDelegate.Highlights removeAllObjects];
+        [mainDelegate.Notes removeAllObjects];
         NSString *serverUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"url_preference"];
         
         BOOL isOfflineMode = [[[NSUserDefaults standardUserDefaults] stringForKey:@"offline_mode"] boolValue];

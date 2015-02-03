@@ -22,31 +22,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CTSTest/PDFView.mm"
-            timestampString = "434898950.794109"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "152"
-            endingLineNumber = "152"
-            landmarkName = "-touchesEnded:withEvent:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CTSTest/PDFView.mm"
-            timestampString = "434898950.794109"
+            timestampString = "443019939.4579"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "91"
-            endingLineNumber = "91"
+            startingLineNumber = "148"
+            endingLineNumber = "148"
             landmarkName = "-touchesMoved:withEvent:"
             landmarkType = "5">
             <Locations>
@@ -214,11 +198,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CTSTest/CParser.m"
-            timestampString = "427800196.293585"
+            timestampString = "443012065.365475"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1023"
-            endingLineNumber = "1023"
+            startingLineNumber = "1270"
+            endingLineNumber = "1270"
             landmarkName = "+GetNoteIdWithData:"
             landmarkType = "5">
          </BreakpointContent>
@@ -244,8 +228,8 @@
                   continueAfterRunningActions = "No"
                   symbolName = "-[ReaderMainToolbar previousButtonTapped:]"
                   moduleName = "CMMSipad"
-                  urlString = "file://localhost/Users/dna/Desktop/to%20test/CMMS/CTSTest/ReaderMainToolbar.m"
-                  timestampString = "434962342.107817"
+                  urlString = "file://localhost/Users/dna/Desktop/GITFILES/CMMS/CTSTest/ReaderMainToolbar.m"
+                  timestampString = "443023845.55221"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "636"
@@ -258,8 +242,8 @@
                   continueAfterRunningActions = "No"
                   symbolName = "-[ReaderMainToolbar previousButtonTapped:]"
                   moduleName = "CMMSipad"
-                  urlString = "file://localhost/Users/dna/Desktop/to%20test/CMMS/CTSTest/ReaderMainToolbar.m"
-                  timestampString = "434962342.1083"
+                  urlString = "file://localhost/Users/dna/Desktop/GITFILES/CMMS/CTSTest/ReaderMainToolbar.m"
+                  timestampString = "443023845.552512"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "636"
@@ -276,13 +260,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CTSTest/ReaderViewController.m"
-            timestampString = "434962941.637123"
+            timestampString = "443012859.49296"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2483"
-            endingLineNumber = "2483"
-            landmarkName = "@implementation ReaderViewController"
-            landmarkType = "3">
+            startingLineNumber = "2584"
+            endingLineNumber = "2584"
+            landmarkName = "-tappedInToolbar:noteButton:"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -315,52 +299,6 @@
             endingLineNumber = "156"
             landmarkName = "-ActionExecute:document:"
             landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CTSTest/PDFView.mm"
-            timestampString = "434898950.794109"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "132"
-            endingLineNumber = "132"
-            landmarkName = "-touchesEnded:withEvent:"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[PDFView touchesEnded:withEvent:]"
-                  moduleName = "CMMSipad"
-                  urlString = "file://localhost/Users/dna/Desktop/to%20test/CMMS/CTSTest/PDFView.mm"
-                  timestampString = "434962342.112537"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "132"
-                  endingLineNumber = "132"
-                  offsetFromSymbolStart = "1380">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[PDFView touchesEnded:withEvent:]"
-                  moduleName = "CMMSipad"
-                  urlString = "file://localhost/Users/dna/Desktop/to%20test/CMMS/CTSTest/PDFView.mm"
-                  timestampString = "434962342.113343"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "132"
-                  endingLineNumber = "132"
-                  offsetFromSymbolStart = "4674">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -528,11 +466,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CTSTest/CParser.m"
-            timestampString = "427799616.60651"
+            timestampString = "443012065.365475"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "608"
-            endingLineNumber = "608"
+            startingLineNumber = "610"
+            endingLineNumber = "610"
             landmarkName = "+loadCorrespondencesWithData:"
             landmarkType = "5">
          </BreakpointContent>
@@ -544,11 +482,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CTSTest/CParser.m"
-            timestampString = "427799723.109562"
+            timestampString = "443012065.365475"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "647"
-            endingLineNumber = "647"
+            startingLineNumber = "649"
+            endingLineNumber = "649"
             landmarkName = "+loadCorrespondencesWithData:"
             landmarkType = "5">
          </BreakpointContent>
@@ -560,11 +498,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CTSTest/CParser.m"
-            timestampString = "427799728.36417"
+            timestampString = "443012065.365475"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "654"
-            endingLineNumber = "654"
+            startingLineNumber = "656"
+            endingLineNumber = "656"
             landmarkName = "+loadCorrespondencesWithData:"
             landmarkType = "5">
          </BreakpointContent>
@@ -576,11 +514,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CTSTest/CParser.m"
-            timestampString = "427799741.004516"
+            timestampString = "443012065.365475"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "679"
-            endingLineNumber = "679"
+            startingLineNumber = "681"
+            endingLineNumber = "681"
             landmarkName = "+loadCorrespondencesWithData:"
             landmarkType = "5">
          </BreakpointContent>
@@ -592,11 +530,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CTSTest/CParser.m"
-            timestampString = "427800196.293585"
+            timestampString = "443012065.365475"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "791"
-            endingLineNumber = "791"
+            startingLineNumber = "793"
+            endingLineNumber = "793"
             landmarkName = "+GetPropertiesFrom:"
             landmarkType = "5">
          </BreakpointContent>
@@ -608,11 +546,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CTSTest/CParser.m"
-            timestampString = "427800196.293585"
+            timestampString = "443012065.365475"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "813"
-            endingLineNumber = "813"
+            startingLineNumber = "815"
+            endingLineNumber = "815"
             landmarkName = "@implementation CParser"
             landmarkType = "3">
          </BreakpointContent>
@@ -624,11 +562,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CTSTest/CParser.m"
-            timestampString = "427800196.293585"
+            timestampString = "443012065.365475"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "786"
-            endingLineNumber = "786"
+            startingLineNumber = "788"
+            endingLineNumber = "788"
             landmarkName = "+GetPropertiesFrom:"
             landmarkType = "5">
          </BreakpointContent>
@@ -640,11 +578,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CTSTest/CParser.m"
-            timestampString = "427799832.848892"
+            timestampString = "443012065.365475"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "685"
-            endingLineNumber = "685"
+            startingLineNumber = "687"
+            endingLineNumber = "687"
             landmarkName = "+loadCorrespondencesWithData:"
             landmarkType = "5">
          </BreakpointContent>
@@ -656,11 +594,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CTSTest/CParser.m"
-            timestampString = "427799857.484277"
+            timestampString = "443012065.365475"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "431"
-            endingLineNumber = "431"
+            startingLineNumber = "433"
+            endingLineNumber = "433"
             landmarkName = "+loadItems:"
             landmarkType = "5">
          </BreakpointContent>
@@ -989,13 +927,105 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CTSTest/SearchResultViewController.m"
-            timestampString = "434472302.335734"
+            timestampString = "443023095.189203"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "446"
-            endingLineNumber = "446"
+            startingLineNumber = "450"
+            endingLineNumber = "450"
             landmarkName = "-tableView:didSelectRowAtIndexPath:"
             landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CTSTest/PDFDocument.mm"
+            timestampString = "443021110.889852"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1039"
+            endingLineNumber = "1039"
+            landmarkName = "-searchNotesArray:state:"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[PDFDocument searchNotesArray:state:]"
+                  moduleName = "CMMSipad"
+                  urlString = "file://localhost/Users/dna/Desktop/GITFILES/CMMS/CTSTest/PDFDocument.mm"
+                  timestampString = "443023845.554457"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1039"
+                  endingLineNumber = "1039"
+                  offsetFromSymbolStart = "300">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[PDFDocument searchNotesArray:state:]"
+                  moduleName = "CMMSipad"
+                  urlString = "file://localhost/Users/dna/Desktop/GITFILES/CMMS/CTSTest/PDFDocument.mm"
+                  timestampString = "443023845.554652"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1039"
+                  endingLineNumber = "1039"
+                  offsetFromSymbolStart = "3398">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CTSTest/PDFDocument.mm"
+            timestampString = "443021577.927423"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1108"
+            endingLineNumber = "1108"
+            landmarkName = "-searchHighlightArray:state:index:"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[PDFDocument searchHighlightArray:state:index:]"
+                  moduleName = "CMMSipad"
+                  urlString = "file://localhost/Users/dna/Desktop/GITFILES/CMMS/CTSTest/PDFDocument.mm"
+                  timestampString = "443023845.554929"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1108"
+                  endingLineNumber = "1108"
+                  offsetFromSymbolStart = "296">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[PDFDocument searchHighlightArray:state:index:]"
+                  moduleName = "CMMSipad"
+                  urlString = "file://localhost/Users/dna/Desktop/GITFILES/CMMS/CTSTest/PDFDocument.mm"
+                  timestampString = "443023845.555132"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1108"
+                  endingLineNumber = "1108"
+                  offsetFromSymbolStart = "2156">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
