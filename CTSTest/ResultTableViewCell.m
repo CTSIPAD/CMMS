@@ -9,7 +9,11 @@
 #import "ResultTableViewCell.h"
 
 @implementation ResultTableViewCell
+<<<<<<< HEAD
 @synthesize imageView,label1,label2,label3,label4,commentLabel;
+=======
+@synthesize imageView,label1,label2,label3,label4;
+>>>>>>> 90e4806140e46fd428f3ed69711529ac9fe91a8b
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -53,12 +57,16 @@
         //label4.font=[UIFont italicSystemFontOfSize:14];
         label4.font=[UIFont fontWithName:@"Helvetica" size:16];
         [self addSubview:label4];
+<<<<<<< HEAD
         
         commentLabel =[[UILabel alloc] initWithFrame:CGRectMake(10, 90, 600, 20)];
         commentLabel.backgroundColor=[UIColor clearColor];
         commentLabel.textColor=[UIColor whiteColor];
         commentLabel.font=[UIFont fontWithName:@"Helvetica" size:16];
         [self addSubview:commentLabel];
+=======
+
+>>>>>>> 90e4806140e46fd428f3ed69711529ac9fe91a8b
     }
     return self;
 }
