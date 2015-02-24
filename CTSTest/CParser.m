@@ -824,21 +824,16 @@
          NSMutableDictionary* property = [[NSMutableDictionary alloc] init];
         NSMutableDictionary* item = [[NSMutableDictionary alloc] init];
         NSArray *pnames = [prop elementsForName:@"Label"];
-<<<<<<< HEAD
-        
-=======
->>>>>>> 90e4806140e46fd428f3ed69711529ac9fe91a8b
+
         if (pnames.count > 0) {
             
             GDataXMLElement *pEl = (GDataXMLElement *) [pnames objectAtIndex:0];
             
             GDataXMLElement* valueEl = [[prop elementsForName:@"Value"] objectAtIndex:0];
-<<<<<<< HEAD
+
             if((valueEl.stringValue==nil || valueEl.stringValue.length==0)&&[pEl.stringValue isEqualToString:@"Comment"] && !(pEl.stringValue==nil || pEl.stringValue.length==0))
                 continue;
-=======
-            
->>>>>>> 90e4806140e46fd428f3ed69711529ac9fe91a8b
+
             [item setObject:valueEl.stringValue forKey:pEl.stringValue];
         }
         [property setObject:item forKey:prop.name ];

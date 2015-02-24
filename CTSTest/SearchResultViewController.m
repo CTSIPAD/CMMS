@@ -238,15 +238,14 @@
                    cell.label4.text=[NSString stringWithFormat:@"%@: %@",[[subSubDictionary allKeys] objectAtIndex:0],value];
                  else
             cell.label4.text=[NSString stringWithFormat:@"%@: %@",[[subSubDictionary allKeys] objectAtIndex:0],value];
-<<<<<<< HEAD
+
         }else if([[keys objectAtIndex:0] isEqualToString:@"Comment"])
         {
             if([appDelegate.userLanguage.lowercaseString isEqualToString:@"ar"])
                 cell.commentLabel.text=[NSString stringWithFormat:@"%@: %@",[[subSubDictionary allKeys] objectAtIndex:0],value];
             else
                 cell.commentLabel.text=[NSString stringWithFormat:@"%@: %@",[[subSubDictionary allKeys] objectAtIndex:0],value];
-=======
->>>>>>> 90e4806140e46fd428f3ed69711529ac9fe91a8b
+
         }
     }
    
@@ -258,20 +257,20 @@
         cell.label2.textAlignment=NSTextAlignmentRight;
         cell.label3.textAlignment=NSTextAlignmentRight;
         cell.label4.textAlignment=NSTextAlignmentRight;
-<<<<<<< HEAD
+
         cell.commentLabel.textAlignment =NSTextAlignmentRight;
-=======
->>>>>>> 90e4806140e46fd428f3ed69711529ac9fe91a8b
+
+
         cell.imageView.frame=CGRectMake(self.view.frame.size.width-122, 3, 119, 119);
         cell.label1.frame=CGRectMake(10, 5, 600, 30);
         cell.label2.frame=CGRectMake(10, 40, 600, 25);
         cell.label3.frame=CGRectMake(10, 65, 600, 20);
         cell.label4.frame=CGRectMake(10, 85, 600, 20);
-<<<<<<< HEAD
-        cell.commentLabel.frame=CGRectMake(10, 105, 600, 20);
-=======
 
->>>>>>> 90e4806140e46fd428f3ed69711529ac9fe91a8b
+        cell.commentLabel.frame=CGRectMake(10, 105, 600, 20);
+
+
+
         
     }
     if(indexPath.row % 2 ==0){
